@@ -30,7 +30,6 @@
   <ItemGroup>
     <Folder Include="Application\Transaction\Commands\" />
     <Folder Include="Application\Transaction\Queries\" />
-    <Folder Include="Application\Validators\" />
     <Folder Include="Infrastructure\Messaging\" />
   </ItemGroup>
 
