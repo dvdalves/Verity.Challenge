@@ -8,21 +8,13 @@ using static Verity.Challenge.Transactions.Application.Transaction.Handlers.GetT
 
 namespace Verity.Challenge.Transactions.Application.Transaction.Handlers;
 
-public class GetTransactions(TransactionsDbContext _context, IMapper _mapper, IValidator<GetTransactionsQuery> _validator) : IRequestHandler<GetTransactionsQuery, List<TransactionDTO>>
+public class GetTransactions(TransactionsDbContext _context, IMapper _mapper) : IRequestHandler<GetTransactionsQuery, List<TransactionDTO>>
 {
-    public record GetTransactionsQuery(DateTime? StartDate, DateTime? EndDate) : IRequest<List<TransactionDTO>>;
+    public record GetTransactionsQuery() : IRequest<List<TransactionDTO>>;
 
     public async Task<List<TransactionDTO>> Handle(GetTransactionsQuery request, CancellationToken cancellationToken)
     {
-        await _validator.ValidateAndThrowAsync(request, cancellationToken);
-
         var query = _context.Transactions.AsQueryable();
-
-        if (request.StartDate.HasValue)
-            query = query.Where(t => t.CreatedAt >= request.StartDate.Value);
-
-        if (request.EndDate.HasValue)
-            query = query.Where(t => t.CreatedAt <= request.EndDate.Value);
 
         var transactions = await query
             .ToListAsync(cancellationToken);

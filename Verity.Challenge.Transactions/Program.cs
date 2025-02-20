@@ -2,7 +2,6 @@ using FluentValidation;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
-using Verity.Challenge.Transactions.Application.Validators;
 using Verity.Challenge.Transactions.Infrastructure.Configurations;
 using Verity.Challenge.Transactions.Infrastructure.Persistence;
 
@@ -23,9 +22,6 @@ public class Program
 
         //AutoMapper
         builder.Services.AddAutoMapper(typeof(TransactionProfile));
-
-        //FluentValidation
-        builder.Services.AddValidatorsFromAssembly(typeof(GetTransactionsQueryValidator).Assembly);
 
         //RabbitMQ
         builder.Services.AddMassTransit(x =>

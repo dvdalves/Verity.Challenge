@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using System.Transactions;
 using Verity.Challenge.Transactions.Application.DTOs;
+using Verity.Challenge.Transactions.Domain.Entities;
 
 namespace Verity.Challenge.Transactions.Infrastructure.Configurations;
 
@@ -8,6 +8,6 @@ public class TransactionProfile : Profile
 {
     public TransactionProfile()
     {
-        CreateMap<Transaction, TransactionDTO>().ReverseMap();
+        CreateMap<TransactionEntity, TransactionDTO>().ReverseMap();
     }
 }

@@ -1,11 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>4709c900-69fb-4738-9da0-6935e224295d</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,6 +30,7 @@
   <ItemGroup>
     <Folder Include="Application\Transaction\Commands\" />
     <Folder Include="Application\Transaction\Queries\" />
+    <Folder Include="Application\Validators\" />
     <Folder Include="Infrastructure\Messaging\" />
   </ItemGroup>
 

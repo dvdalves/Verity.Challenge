@@ -42,11 +42,10 @@ public class TransactionsController(IMediator _mediatr) : ControllerBase
         return !success ? NotFound() : NoContent();
     }
 
-    [HttpPut()]
-    public async Task<IActionResult> Update([FromBody] UpdateTransactionCommand command, CancellationToken cancellationToken)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTransactionCommand command, CancellationToken cancellationToken)
     {
-        var success = await _mediatr.Send(command, cancellationToken);
-
+        var success = await _mediatr.Send(new UpdateTransactionCommand(id, command.Amount, command.Type), cancellationToken);
         return !success ? NotFound() : NoContent();
     }
 }
