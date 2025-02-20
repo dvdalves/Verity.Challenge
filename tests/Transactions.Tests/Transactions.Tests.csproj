@@ -21,10 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Application\Application.csproj" />
-    <ProjectReference Include="..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-    <ProjectReference Include="..\src\Transactions\Web.Api\Web.Api.csproj" />
+    <ProjectReference Include="..\..\src\Transactions\Application\Application.csproj" />
+    <ProjectReference Include="..\..\src\Transactions\Domain\Domain.csproj" />
+    <ProjectReference Include="..\..\src\Transactions\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Transactions\Web.Api\Web.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>

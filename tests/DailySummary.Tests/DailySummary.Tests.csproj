@@ -21,10 +21,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\DailySummary\Application\Application.csproj" />
-		<ProjectReference Include="..\..\src\DailySummary\Domain\Domain.csproj" />
-		<ProjectReference Include="..\..\src\DailySummary\Infrastructure\Infrastructure.csproj" />
-		<ProjectReference Include="..\..\Verity.Challenge.DailySummary\Web.Api.csproj" />
+	  <ProjectReference Include="..\..\src\DailySummary\Application\Application.csproj" />
+	  <ProjectReference Include="..\..\src\DailySummary\Domain\Domain.csproj" />
+	  <ProjectReference Include="..\..\src\DailySummary\Infrastructure\Infrastructure.csproj" />
+	  <ProjectReference Include="..\..\src\DailySummary\Web.Api\Web.Api.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

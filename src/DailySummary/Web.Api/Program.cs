@@ -1,8 +1,8 @@
+using Application;
+using Infrastructure;
 using Infrastructure.Configurations;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Application;
-using Infrastructure;
 
 namespace Web.Api;
 
