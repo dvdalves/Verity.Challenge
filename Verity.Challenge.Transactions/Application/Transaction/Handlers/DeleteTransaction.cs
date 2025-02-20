@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Verity.Challenge.Transactions.Infrastructure.Persistence;
-using static Verity.Challenge.Transactions.Application.Commands.DeleteTransactionCommandHandler;
+using static Verity.Challenge.Transactions.Application.Transaction.Handlers.DeleteTransaction;
 
-namespace Verity.Challenge.Transactions.Application.Commands;
+namespace Verity.Challenge.Transactions.Application.Transaction.Handlers;
 
-public class DeleteTransactionCommandHandler(TransactionsDbContext _context) : IRequestHandler<DeleteTransactionCommand, bool>
+public class DeleteTransaction(TransactionsDbContext _context) : IRequestHandler<DeleteTransactionCommand, bool>
 {
     public record DeleteTransactionCommand(Guid Id) : IRequest<bool>;
 

@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using static Verity.Challenge.Transactions.Application.Commands.CreateTransactionCommandHandler;
-using static Verity.Challenge.Transactions.Application.Commands.DeleteTransactionCommandHandler;
-using static Verity.Challenge.Transactions.Application.Commands.UpdateTransactionCommandHandler;
-using static Verity.Challenge.Transactions.Application.Queries.GetTransactionByIdQueryHandler;
-using static Verity.Challenge.Transactions.Application.Queries.GetTransactionsQueryHandler;
+using static Verity.Challenge.Transactions.Application.Transaction.Handlers.CreateTransaction;
+using static Verity.Challenge.Transactions.Application.Transaction.Handlers.DeleteTransaction;
+using static Verity.Challenge.Transactions.Application.Transaction.Handlers.GetTransactionById;
+using static Verity.Challenge.Transactions.Application.Transaction.Handlers.GetTransactions;
+using static Verity.Challenge.Transactions.Application.Transaction.Handlers.UpdateTransaction;
 
 namespace Verity.Challenge.Transactions.Controllers;
 
@@ -13,52 +13,40 @@ namespace Verity.Challenge.Transactions.Controllers;
 public class TransactionsController(IMediator _mediatr) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> CreateTransaction([FromBody] CreateTransactionCommand command)
+    public async Task<IActionResult> Create([FromBody] CreateTransactionCommand command, CancellationToken cancellationToken)
     {
-        var transactionId = await _mediatr.Send(command);
-        return CreatedAtAction(nameof(CreateTransaction), new { id = transactionId }, null);
+        var id = await _mediatr.Send(command, cancellationToken);
+        return CreatedAtAction(nameof(GetById), new { id }, null);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetTransactions([FromQuery] GetTransactionsQuery query)
+    public async Task<IActionResult> GetAll([FromQuery] GetTransactionsQuery query, CancellationToken cancellationToken)
     {
-        var transactions = await _mediatr.Send(query);
+        var transactions = await _mediatr.Send(query, cancellationToken);
         return Ok(transactions);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetTransactionById(Guid id)
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var transaction = await _mediatr.Send(new GetTransactionByIdQuery(id));
+        var transaction = await _mediatr.Send(new GetTransactionByIdQuery(id), cancellationToken);
 
-        if (transaction == null)
-            return NotFound();
-
-        return Ok(transaction);
+        return transaction == null ? NotFound() : Ok(transaction);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTransaction(Guid id)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        var success = await _mediatr.Send(new DeleteTransactionCommand(id));
+        var success = await _mediatr.Send(new DeleteTransactionCommand(id), cancellationToken);
 
-        if (!success)
-            return NotFound();
-
-        return NoContent();
+        return !success ? NotFound() : NoContent();
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateTransaction(Guid id, [FromBody] UpdateTransactionCommand command)
+    [HttpPut()]
+    public async Task<IActionResult> Update([FromBody] UpdateTransactionCommand command, CancellationToken cancellationToken)
     {
-        if (id != command.Id)
-            return BadRequest("ID in URL and body must match.");
+        var success = await _mediatr.Send(command, cancellationToken);
 
-        var success = await _mediatr.Send(command);
-
-        if (!success)
-            return NotFound();
-
-        return NoContent();
+        return !success ? NotFound() : NoContent();
     }
 }

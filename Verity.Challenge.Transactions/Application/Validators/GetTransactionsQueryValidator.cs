@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using Verity.Challenge.Transactions.Application.Queries;
+using Verity.Challenge.Transactions.Application.Transaction.Handlers;
 
 namespace Verity.Challenge.Transactions.Application.Validators;
 
-public class GetTransactionsQueryValidator : AbstractValidator<GetTransactionsQueryHandler.GetTransactionsQuery>
+public class GetTransactionsQueryValidator : AbstractValidator<GetTransactions.GetTransactionsQuery>
 {
     public GetTransactionsQueryValidator()
     {

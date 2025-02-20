@@ -4,11 +4,11 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Verity.Challenge.Transactions.Application.DTOs;
 using Verity.Challenge.Transactions.Infrastructure.Persistence;
-using static Verity.Challenge.Transactions.Application.Queries.GetTransactionsQueryHandler;
+using static Verity.Challenge.Transactions.Application.Transaction.Handlers.GetTransactions;
 
-namespace Verity.Challenge.Transactions.Application.Queries;
+namespace Verity.Challenge.Transactions.Application.Transaction.Handlers;
 
-public class GetTransactionsQueryHandler(TransactionsDbContext _context, IMapper _mapper, IValidator<GetTransactionsQuery> _validator) : IRequestHandler<GetTransactionsQuery, List<TransactionDTO>>
+public class GetTransactions(TransactionsDbContext _context, IMapper _mapper, IValidator<GetTransactionsQuery> _validator) : IRequestHandler<GetTransactionsQuery, List<TransactionDTO>>
 {
     public record GetTransactionsQuery(DateTime? StartDate, DateTime? EndDate) : IRequest<List<TransactionDTO>>;
 
@@ -25,7 +25,6 @@ public class GetTransactionsQueryHandler(TransactionsDbContext _context, IMapper
             query = query.Where(t => t.CreatedAt <= request.EndDate.Value);
 
         var transactions = await query
-            .AsNoTracking()
             .ToListAsync(cancellationToken);
 
         return _mapper.Map<List<TransactionDTO>>(transactions);
