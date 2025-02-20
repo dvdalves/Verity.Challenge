@@ -36,12 +36,12 @@ public class CreateTransactionHandlerTests
         var command = new CreateTransaction.CreateTransactionCommand(100.00m, TransactionType.Credit);
 
         // Act
-        var transactionId = await _handler.Handle(command, CancellationToken.None);
+        var transactionId = await _handler!.Handle(command, CancellationToken.None);
 
         // Assert
         transactionId.Should().NotBe(Guid.Empty);
 
-        _publishEndpointMock.Verify(x =>
+        _publishEndpointMock!.Verify(x =>
             x.Publish(It.IsAny<TransactionCreated>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -52,13 +52,13 @@ public class CreateTransactionHandlerTests
         var command = new CreateTransaction.CreateTransactionCommand(-10.00m, TransactionType.Credit);
 
         // Act
-        Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+        Func<Task> act = async () => await _handler!.Handle(command, CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<Exception>()
             .WithMessage("Amount must be greater than zero.");
 
-        _publishEndpointMock.Verify(x =>
+        _publishEndpointMock!.Verify(x =>
             x.Publish(It.IsAny<TransactionCreated>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

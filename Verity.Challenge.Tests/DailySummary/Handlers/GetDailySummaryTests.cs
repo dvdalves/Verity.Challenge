@@ -1,31 +1,26 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Verity.Challenge.DailySummary.Application.DailySummary.Handlers.GetDailySummary;
-using Verity.Challenge.DailySummary.Infrastructure.Persistence;
-using Verity.Challenge.DailySummary.Application.DailySummary.Handlers;
-using Verity.Challenge.DailySummary.Infrastructure.Configurations;
-using Verity.Challenge.DailySummary.Domain.Entities;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Verity.Challenge.DailySummary.Application.DailySummary.Handlers;
+using Verity.Challenge.DailySummary.Domain.Entities;
+using Verity.Challenge.DailySummary.Infrastructure.Configurations;
+using Verity.Challenge.DailySummary.Infrastructure.Persistence;
+using static Verity.Challenge.DailySummary.Application.DailySummary.Handlers.GetDailySummary;
 
 namespace Verity.Challenge.Tests.DailySummary.Handlers;
 
 [TestFixture]
 public class GetDailySummaryHandlerTests
 {
-    private DailySummaryDbContext _dbContext;
-    private IMapper _mapper;
-    private GetDailySummary _handler;
+    private DailySummaryDbContext _dbContext = null!;
+    private IMapper _mapper = null!;
+    private GetDailySummary _handler = null!;
 
     [SetUp]
     public void SetUp()
     {
         var dbOptions = new DbContextOptionsBuilder<DailySummaryDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Banco em memória
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
         _dbContext = new DailySummaryDbContext(dbOptions);

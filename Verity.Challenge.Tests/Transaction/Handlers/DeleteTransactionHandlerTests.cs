@@ -26,13 +26,13 @@ public class DeleteTransactionHandlerTests : IDisposable
         _dbContext = new TransactionsDbContext(dbOptions);
         _publishEndpointMock = new Mock<IPublishEndpoint>();
 
-        _handler = new DeleteTransaction(_dbContext, _publishEndpointMock.Object);
+        _handler = new DeleteTransaction(_dbContext!, _publishEndpointMock.Object);
     }
 
     [TearDown]
     public void TearDown()
     {
-        _dbContext.Dispose();
+        _dbContext?.Dispose();
     }
 
     public void Dispose()
@@ -46,20 +46,20 @@ public class DeleteTransactionHandlerTests : IDisposable
     {
         // Arrange
         var transaction = TransactionEntity.Create(100.00m, Transactions.Domain.Enums.TransactionType.Credit);
-        _dbContext.Transactions.Add(transaction);
+        _dbContext!.Transactions.Add(transaction);
         await _dbContext.SaveChangesAsync();
 
         var command = new DeleteTransaction.DeleteTransactionCommand(transaction.Id);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        var result = await _handler!.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().BeTrue();
         var deletedTransaction = await _dbContext.Transactions.FindAsync(transaction.Id);
-        deletedTransaction.Should().BeNull(); // Confirma que a transação foi removida
+        deletedTransaction.Should().BeNull();
 
-        _publishEndpointMock.Verify(x =>
+        _publishEndpointMock!.Verify(x =>
             x.Publish(It.IsAny<TransactionDeleted>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -70,12 +70,12 @@ public class DeleteTransactionHandlerTests : IDisposable
         var command = new DeleteTransaction.DeleteTransactionCommand(Guid.NewGuid());
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        var result = await _handler!.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().BeFalse();
 
-        _publishEndpointMock.Verify(x =>
+        _publishEndpointMock!.Verify(x =>
             x.Publish(It.IsAny<TransactionDeleted>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }
