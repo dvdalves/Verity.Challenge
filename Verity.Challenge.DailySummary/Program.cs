@@ -1,11 +1,10 @@
-
+using Infrastructure.Configurations;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
-using Verity.Challenge.DailySummary.Infrastructure.Configurations;
-using Verity.Challenge.DailySummary.Infrastructure.Persistence;
+using Application;
+using Infrastructure;
 
-namespace Verity.Challenge.DailySummary;
+namespace Web.Api;
 
 public class Program
 {
@@ -13,15 +12,10 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        //EF Core (PostgreSQL)
-        builder.Services.AddDbContext<DailySummaryDbContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-        //Mediatr
-        builder.Services.AddMediatR(x => x.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-
-        //AutoMapper
-        builder.Services.AddAutoMapper(typeof(DailySummaryProfile));
+        builder.Services
+            .AddApplication()
+            .AddInfrastructure(builder.Configuration)
+            .AddAutoMapper(typeof(DailySummaryProfile));
 
         //RabbitMQ
         builder.Services.AddMassTransit(x =>

@@ -25,7 +25,7 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\src\Transactions\Web.Api\Web.Api.csproj" />
-    <ProjectReference Include="..\Verity.Challenge.DailySummary\Verity.Challenge.DailySummary.csproj" />
+    <ProjectReference Include="..\Verity.Challenge.DailySummary\Web.Api.csproj" />
     <ProjectReference Include="..\Verity.Challenge.Transactions\Web.Api.csproj" />
   </ItemGroup>
 

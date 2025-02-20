@@ -1,4 +1,4 @@
-﻿namespace Verity.Challenge.DailySummary.Domain.Entities;
+﻿namespace Domain.Entities;
 
 public class DailySummaryEntity
 {

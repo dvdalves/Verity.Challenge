@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using static Verity.Challenge.DailySummary.Application.DailySummary.Handlers.GetDailySummary;
+using static Application.DailySummary.Handlers.GetDailySummary;
 
-namespace Verity.Challenge.DailySummary.Controllers;
+namespace Web.Api.Controllers;
 
 [Route("api/daily-summary")]
 [ApiController]

@@ -1,4 +1,4 @@
-﻿namespace Verity.Challenge.DailySummary.Application.DTOs;
+﻿namespace Application.DTOs;
 
 public class DailySummaryDTO
 {
