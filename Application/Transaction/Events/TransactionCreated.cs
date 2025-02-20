@@ -1,0 +1,5 @@
+﻿using Domain.Enums;
+
+namespace Application.Transaction.Events;
+
+public record TransactionCreated(Guid Id, decimal Amount, TransactionType Type, DateTime CreatedAt);

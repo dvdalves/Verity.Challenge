@@ -2,10 +2,6 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using Verity.Challenge.Transactions.Application.Transaction.Events;
-using Verity.Challenge.Transactions.Application.Transaction.Handlers;
-using Verity.Challenge.Transactions.Domain.Enums;
-using Verity.Challenge.Transactions.Infrastructure.Persistence;
 
 namespace Verity.Challenge.Tests.Transaction.Handlers;
 

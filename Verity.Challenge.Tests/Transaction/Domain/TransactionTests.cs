@@ -1,8 +1,4 @@
-﻿using Verity.Challenge.Transactions.Domain;
-using Verity.Challenge.Transactions.Domain.Entities;
-using Verity.Challenge.Transactions.Domain.Enums;
-
-namespace Verity.Challenge.Tests.Transaction.Domain;
+﻿namespace Verity.Challenge.Tests.Transaction.Domain;
 
 [TestFixture]
 public class TransactionTests

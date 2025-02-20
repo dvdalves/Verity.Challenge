@@ -23,7 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Verity.Challenge.Core\Verity.Challenge.Core.csproj" />
     <ProjectReference Include="..\Verity.Challenge.DailySummary\Verity.Challenge.DailySummary.csproj" />
-    <ProjectReference Include="..\Verity.Challenge.Transactions\Verity.Challenge.Transactions.csproj" />
+    <ProjectReference Include="..\Verity.Challenge.Transactions\Web.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>
