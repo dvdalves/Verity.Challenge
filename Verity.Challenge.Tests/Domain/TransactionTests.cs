@@ -2,7 +2,7 @@
 using Domain.Entities;
 using Domain.Enums;
 
-namespace Verity.Challenge.Tests.Transaction.Domain;
+namespace Transactions.Tests.Domain;
 
 [TestFixture]
 public class TransactionTests

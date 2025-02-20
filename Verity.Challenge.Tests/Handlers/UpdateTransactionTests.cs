@@ -8,7 +8,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 
-namespace Verity.Challenge.Tests.Transaction.Handlers;
+namespace Transactions.Tests.Handlers;
 
 [TestFixture]
 public class UpdateTransactionHandlerTests

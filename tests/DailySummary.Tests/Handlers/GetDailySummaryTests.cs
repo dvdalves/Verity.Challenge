@@ -1,13 +1,13 @@
-﻿using AutoMapper;
+﻿using Application.DailySummary.Handlers;
+using AutoMapper;
+using Domain.Entities;
 using FluentAssertions;
+using Infrastructure.Configurations;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Verity.Challenge.DailySummary.Application.DailySummary.Handlers;
-using Verity.Challenge.DailySummary.Domain.Entities;
-using Verity.Challenge.DailySummary.Infrastructure.Configurations;
-using Verity.Challenge.DailySummary.Infrastructure.Persistence;
-using static Verity.Challenge.DailySummary.Application.DailySummary.Handlers.GetDailySummary;
+using static Application.DailySummary.Handlers.GetDailySummary;
 
-namespace Verity.Challenge.Tests.DailySummary.Handlers;
+namespace DailySummary.Tests.Handlers;
 
 [TestFixture]
 public class GetDailySummaryHandlerTests

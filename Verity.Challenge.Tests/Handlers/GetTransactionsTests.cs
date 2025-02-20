@@ -7,14 +7,14 @@ using Infrastructure.Configurations;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Verity.Challenge.Tests.Transaction.Handlers;
+namespace Transactions.Tests.Handlers;
 
 [TestFixture]
-public class GetTransactionByIdHandlerTests
+public class GetTransactionsHandlerTests
 {
     private TransactionsDbContext? _dbContext;
     private IMapper? _mapper;
-    private GetTransactionById? _handler;
+    private GetTransactions? _handler;
 
     [SetUp]
     public void SetUp()
@@ -32,7 +32,7 @@ public class GetTransactionByIdHandlerTests
 
         _mapper = mapperConfig.CreateMapper();
 
-        _handler = new GetTransactionById(_dbContext, _mapper);
+        _handler = new GetTransactions(_dbContext, _mapper);
     }
 
     [TearDown]
@@ -42,35 +42,37 @@ public class GetTransactionByIdHandlerTests
     }
 
     [Test]
-    public async Task Handle_ExistingTransaction_ShouldReturnTransactionDto()
+    public async Task Handle_WhenTransactionsExist_ShouldReturnTransactionDtos()
     {
         // Arrange
-        var transaction = TransactionEntity.Create(200.00m, TransactionType.Credit);
-        _dbContext.Transactions.Add(transaction);
+        var transaction1 = TransactionEntity.Create(200.00m, TransactionType.Credit);
+        var transaction2 = TransactionEntity.Create(150.00m, TransactionType.Debit);
+        _dbContext.Transactions.AddRange(transaction1, transaction2);
         await _dbContext.SaveChangesAsync();
 
-        var query = new GetTransactionById.GetTransactionByIdQuery(transaction.Id);
+        var query = new GetTransactions.GetTransactionsQuery();
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.Id.Should().Be(transaction.Id);
-        result.Amount.Should().Be(transaction.Amount);
-        result.Type.Should().Be(transaction.Type);
+        result.Should().HaveCount(2);
+        result.Should().ContainSingle(t => t.Id == transaction1.Id && t.Amount == transaction1.Amount);
+        result.Should().ContainSingle(t => t.Id == transaction2.Id && t.Amount == transaction2.Amount);
     }
 
     [Test]
-    public async Task Handle_NonExistingTransaction_ShouldReturnNull()
+    public async Task Handle_WhenNoTransactionsExist_ShouldReturnEmptyList()
     {
         // Arrange
-        var query = new GetTransactionById.GetTransactionByIdQuery(Guid.NewGuid());
+        var query = new GetTransactions.GetTransactionsQuery();
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Should().BeNull();
+        result.Should().NotBeNull();
+        result.Should().BeEmpty();
     }
 }

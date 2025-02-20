@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Api", "Verity.Challenge
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0A9835AD-C5CD-4813-BCF2-48D17504EF1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Verity.Challenge.Tests", "Verity.Challenge.Tests\Verity.Challenge.Tests.csproj", "{F4D713DA-6E10-4B46-83F1-8A5F731C7380}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transactions.Tests", "Verity.Challenge.Tests\Transactions.Tests.csproj", "{F4D713DA-6E10-4B46-83F1-8A5F731C7380}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{087D3449-4BDD-4302-9249-2836C2933141}"
 	ProjectSection(SolutionItems) = preProject
@@ -33,6 +33,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "src\DailySummary\Domain\Domain.csproj", "{A5487243-C0A5-4602-96CF-AA8B8A4DCE87}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "src\DailySummary\Infrastructure\Infrastructure.csproj", "{CD9B3496-2F6A-4D37-BDCB-EB1E53192FA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DailySummary.Tests", "tests\DailySummary.Tests\DailySummary.Tests.csproj", "{500FB3BC-8F59-49EC-87A6-4FDDFAF7A8C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,6 +78,10 @@ Global
 		{CD9B3496-2F6A-4D37-BDCB-EB1E53192FA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD9B3496-2F6A-4D37-BDCB-EB1E53192FA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD9B3496-2F6A-4D37-BDCB-EB1E53192FA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{500FB3BC-8F59-49EC-87A6-4FDDFAF7A8C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{500FB3BC-8F59-49EC-87A6-4FDDFAF7A8C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{500FB3BC-8F59-49EC-87A6-4FDDFAF7A8C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{500FB3BC-8F59-49EC-87A6-4FDDFAF7A8C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,5 +98,6 @@ Global
 		{47C2A8F8-10A8-40F1-80CB-2079F63CC958} = {A29EBEDB-5C1C-4ABA-A40F-A585EADA81F9}
 		{A5487243-C0A5-4602-96CF-AA8B8A4DCE87} = {A29EBEDB-5C1C-4ABA-A40F-A585EADA81F9}
 		{CD9B3496-2F6A-4D37-BDCB-EB1E53192FA2} = {A29EBEDB-5C1C-4ABA-A40F-A585EADA81F9}
+		{500FB3BC-8F59-49EC-87A6-4FDDFAF7A8C1} = {0A9835AD-C5CD-4813-BCF2-48D17504EF1C}
 	EndGlobalSection
 EndGlobal
