@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using MassTransit;
+using MediatR;
+using Verity.Challenge.Transactions.Application.Transaction.Events;
 using Verity.Challenge.Transactions.Domain.Entities;
 using Verity.Challenge.Transactions.Domain.Enums;
 using Verity.Challenge.Transactions.Infrastructure.Persistence;
@@ -6,7 +8,8 @@ using static Verity.Challenge.Transactions.Application.Transaction.Handlers.Crea
 
 namespace Verity.Challenge.Transactions.Application.Transaction.Handlers;
 
-public class CreateTransaction(TransactionsDbContext context) : IRequestHandler<CreateTransactionCommand, Guid>
+public class CreateTransaction(TransactionsDbContext context, IPublishEndpoint publishEndpoint)
+    : IRequestHandler<CreateTransactionCommand, Guid>
 {
     public record CreateTransactionCommand(decimal Amount, TransactionType Type) : IRequest<Guid>;
 
@@ -16,6 +19,9 @@ public class CreateTransaction(TransactionsDbContext context) : IRequestHandler<
 
         context.Transactions.Add(transaction);
         await context.SaveChangesAsync(cancellationToken);
+
+        var transactionEvent = new TransactionCreated(transaction.Id, transaction.Amount, transaction.Type, transaction.CreatedAt);
+        await publishEndpoint.Publish(transactionEvent, cancellationToken);
 
         return transaction.Id;
     }

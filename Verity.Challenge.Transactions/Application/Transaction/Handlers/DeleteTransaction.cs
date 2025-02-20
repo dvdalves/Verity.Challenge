@@ -1,11 +1,14 @@
-﻿using MediatR;
+﻿using MassTransit;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Verity.Challenge.Transactions.Application.Transaction.Events;
 using Verity.Challenge.Transactions.Infrastructure.Persistence;
 using static Verity.Challenge.Transactions.Application.Transaction.Handlers.DeleteTransaction;
 
 namespace Verity.Challenge.Transactions.Application.Transaction.Handlers;
 
-public class DeleteTransaction(TransactionsDbContext _context) : IRequestHandler<DeleteTransactionCommand, bool>
+public class DeleteTransaction(TransactionsDbContext _context, IPublishEndpoint publishEndpoint)
+    : IRequestHandler<DeleteTransactionCommand, bool>
 {
     public record DeleteTransactionCommand(Guid Id) : IRequest<bool>;
 
@@ -19,6 +22,9 @@ public class DeleteTransaction(TransactionsDbContext _context) : IRequestHandler
 
         _context.Transactions.Remove(transaction);
         await _context.SaveChangesAsync(cancellationToken);
+
+        var transactionEvent = new TransactionDeleted(request.Id);
+        await publishEndpoint.Publish(transactionEvent, cancellationToken);
 
         return true;
     }

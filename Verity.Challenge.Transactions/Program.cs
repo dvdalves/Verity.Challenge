@@ -1,4 +1,3 @@
-using FluentValidation;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -17,7 +16,7 @@ public class Program
         builder.Services.AddDbContext<TransactionsDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-        //Meditar
+        //Mediatr
         builder.Services.AddMediatR(x => x.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
         //AutoMapper
@@ -41,8 +40,6 @@ public class Program
                 cfg.ConfigureEndpoints(context);
             });
         });
-
-        // Add services to the container.
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

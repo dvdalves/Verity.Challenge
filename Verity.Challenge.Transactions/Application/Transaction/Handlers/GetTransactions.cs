@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Verity.Challenge.Transactions.Application.DTOs;
