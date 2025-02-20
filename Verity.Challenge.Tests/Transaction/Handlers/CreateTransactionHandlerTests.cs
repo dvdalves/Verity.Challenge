@@ -7,7 +7,7 @@ using Verity.Challenge.Transactions.Application.Transaction.Handlers;
 using Verity.Challenge.Transactions.Domain.Enums;
 using Verity.Challenge.Transactions.Infrastructure.Persistence;
 
-namespace Verity.Challenge.Tests.Handlers;
+namespace Verity.Challenge.Tests.Transaction.Handlers;
 
 [TestFixture]
 public class CreateTransactionHandlerTests

@@ -1,6 +1,6 @@
 ﻿using Verity.Challenge.DailySummary.Domain.Entities;
 
-namespace Verity.Challenge.Tests.Domain;
+namespace Verity.Challenge.Tests.DailySummary.Domain;
 
 [TestFixture]
 public class DailySummaryTests

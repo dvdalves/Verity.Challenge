@@ -28,8 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\Transaction\Commands\" />
-    <Folder Include="Application\Transaction\Queries\" />
     <Folder Include="Infrastructure\Messaging\" />
   </ItemGroup>
 
