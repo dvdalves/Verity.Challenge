@@ -1,5 +1,10 @@
-﻿using AutoMapper;
+﻿using Application.Transaction.Handlers;
+using AutoMapper;
+using Domain.Entities;
+using Domain.Enums;
 using FluentAssertions;
+using Infrastructure.Configurations;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Verity.Challenge.Tests.Transaction.Handlers;

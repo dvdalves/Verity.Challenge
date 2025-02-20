@@ -28,10 +28,6 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Verity.Challenge.Core\Verity.Challenge.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Infrastructure\Messaging\" />
   </ItemGroup>
 

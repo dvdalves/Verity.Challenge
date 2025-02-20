@@ -1,5 +1,10 @@
-﻿using AutoMapper;
+﻿using Application.Transaction.Handlers;
+using AutoMapper;
+using Domain.Entities;
+using Domain.Enums;
 using FluentAssertions;
+using Infrastructure.Configurations;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Verity.Challenge.Tests.Transaction.Handlers;
@@ -15,7 +20,7 @@ public class GetTransactionByIdHandlerTests
     public void SetUp()
     {
         var dbOptions = new DbContextOptionsBuilder<TransactionsDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Banco em memória
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
         _dbContext = new TransactionsDbContext(dbOptions);

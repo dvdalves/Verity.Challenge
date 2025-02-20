@@ -1,4 +1,9 @@
-﻿using FluentAssertions;
+﻿using Application.Transaction.Events;
+using Application.Transaction.Handlers;
+using Domain.Entities;
+using Domain.Enums;
+using FluentAssertions;
+using Infrastructure.Persistence;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -41,7 +46,7 @@ public class DeleteTransactionHandlerTests : IDisposable
     public async Task Handle_ExistingTransaction_ShouldDeleteTransactionAndPublishEvent()
     {
         // Arrange
-        var transaction = TransactionEntity.Create(100.00m, Transactions.Domain.Enums.TransactionType.Credit);
+        var transaction = TransactionEntity.Create(100.00m, TransactionType.Credit);
         _dbContext!.Transactions.Add(transaction);
         await _dbContext.SaveChangesAsync();
 

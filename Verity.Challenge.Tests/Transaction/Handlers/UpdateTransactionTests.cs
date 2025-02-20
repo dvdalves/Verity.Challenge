@@ -1,4 +1,9 @@
-﻿using FluentAssertions;
+﻿using Application.Transaction.Events;
+using Application.Transaction.Handlers;
+using Domain.Entities;
+using Domain.Enums;
+using FluentAssertions;
+using Infrastructure.Persistence;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Moq;
