@@ -16,14 +16,16 @@ public class TransactionUpdatedConsumer(IApplicationDbContext _context) : IConsu
         var summary = await _context.DailySummaries
             .FirstOrDefaultAsync(s => s.Date.Date == updatedAtUtc);
 
-        if (summary != null)
-        {
-            summary.Update(
+        var transaction = await _context.DailyTransactions
+            .FirstOrDefaultAsync(t => t.Id == message.Id);
+
+        transaction?.Update(message.Amount, message.Type);
+
+        summary?.Update(
                 summary.TotalCredits + (message.Type == TransactionType.Credit ? message.Amount : 0),
                 summary.TotalDebits + (message.Type == TransactionType.Debit ? message.Amount : 0)
             );
 
-            await _context.SaveChangesAsync();
-        }
+        await _context.SaveChangesAsync();
     }
 }

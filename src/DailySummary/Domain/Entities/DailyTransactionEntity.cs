@@ -21,4 +21,10 @@ public class DailyTransactionEntity
             Type = type
         };
     }
+
+    public void Update(decimal amount, TransactionType type)
+    {
+        Amount = amount;
+        Type = type;
+    }
 }
