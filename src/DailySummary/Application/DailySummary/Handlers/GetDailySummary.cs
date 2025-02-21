@@ -12,11 +12,11 @@ public class GetDailySummary(IApplicationDbContext _context, IMapper _mapper)
     public record GetDailySummaryQuery(DateTime? Date) : IRequest<DailySummaryDTO?>;
     public async Task<DailySummaryDTO?> Handle(GetDailySummaryQuery request, CancellationToken cancellationToken)
     {
-        var dateUtc = request.Date ?? DateTime.UtcNow;
+        var dateUtc = (request.Date ?? DateTime.UtcNow).ToUniversalTime().Date;
 
         var summary = await _context.DailySummaries
             .AsNoTracking()
-            .FirstOrDefaultAsync(d => d.Date == dateUtc, cancellationToken);
+            .FirstOrDefaultAsync(d => d.Date.Date == dateUtc, cancellationToken);
 
         return summary is null ? null : _mapper.Map<DailySummaryDTO>(summary);
     }

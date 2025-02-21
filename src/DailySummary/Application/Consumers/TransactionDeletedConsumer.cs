@@ -16,8 +16,10 @@ public class TransactionDeletedConsumer(IApplicationDbContext _context) : IConsu
 
         if (transaction != null)
         {
+            var transactionDateUtc = transaction.Date.ToUniversalTime().Date;
+
             var summary = await _context.DailySummaries
-                .FirstOrDefaultAsync(s => s.Date == transaction.Date);
+                .FirstOrDefaultAsync(s => s.Date.Date == transactionDateUtc);
 
             if (summary != null)
             {

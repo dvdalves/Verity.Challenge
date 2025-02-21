@@ -11,8 +11,10 @@ public class TransactionUpdatedConsumer(IApplicationDbContext _context) : IConsu
     {
         var message = context.Message;
 
+        var updatedAtUtc = message.UpdatedAt.ToUniversalTime().Date;
+
         var summary = await _context.DailySummaries
-            .FirstOrDefaultAsync(s => s.Date == message.UpdatedAt.Date);
+            .FirstOrDefaultAsync(s => s.Date.Date == updatedAtUtc);
 
         if (summary != null)
         {
