@@ -14,7 +14,7 @@ public class UpdateTransactionHandlerTests : BaseTests
     [SetUp]
     public void SetUp()
     {
-        _handler = new UpdateTransaction(DbContextMock.Object, PublishEndpointMock.Object);
+        _handler = new UpdateTransaction(DbContext, PublishEndpointMock.Object);
     }
 
     [Test]
@@ -22,8 +22,8 @@ public class UpdateTransactionHandlerTests : BaseTests
     {
         // Arrange
         var transaction = TransactionEntity.Create(100.00m, TransactionType.Credit);
-        DbContextMock.Object.Transactions.Add(transaction);
-        await DbContextMock.Object.SaveChangesAsync();
+        DbContext.Transactions.Add(transaction);
+        await DbContext.SaveChangesAsync();
 
         var command = new UpdateTransaction.UpdateTransactionCommand(transaction.Id, 250.00m, TransactionType.Debit);
 
@@ -33,7 +33,7 @@ public class UpdateTransactionHandlerTests : BaseTests
         // Assert
         Assert.That(result, Is.True);
 
-        var updatedTransaction = await DbContextMock.Object.Transactions.FindAsync(transaction.Id);
+        var updatedTransaction = await DbContext.Transactions.FindAsync(transaction.Id);
         Assert.That(updatedTransaction, Is.Not.Null);
         Assert.That(updatedTransaction!.Amount, Is.EqualTo(250.00m));
         Assert.That(updatedTransaction.Type, Is.EqualTo(TransactionType.Debit));

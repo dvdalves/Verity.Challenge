@@ -12,7 +12,7 @@ public class GetTransactionsHandlerTests : BaseTests
     [SetUp]
     public void SetUp()
     {
-        _handler = new GetTransactions(DbContextMock.Object, Mapper);
+        _handler = new GetTransactions(DbContext, Mapper);
     }
 
     [Test]
@@ -21,8 +21,8 @@ public class GetTransactionsHandlerTests : BaseTests
         // Arrange
         var transaction1 = TransactionEntity.Create(200.00m, TransactionType.Credit);
         var transaction2 = TransactionEntity.Create(150.00m, TransactionType.Debit);
-        DbContextMock.Object.Transactions.AddRange(transaction1, transaction2);
-        await DbContextMock.Object.SaveChangesAsync();
+        DbContext.Transactions.AddRange(transaction1, transaction2);
+        await DbContext.SaveChangesAsync();
 
         var query = new GetTransactions.GetTransactionsQuery();
 

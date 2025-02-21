@@ -16,7 +16,7 @@ public class TransactionUpdatedConsumerTests : BaseTests
     [SetUp]
     public void SetUp()
     {
-        _consumer = new TransactionUpdatedConsumer(DbContextMock.Object);
+        _consumer = new TransactionUpdatedConsumer(DbContext);
     }
 
     [Test]
@@ -28,24 +28,21 @@ public class TransactionUpdatedConsumerTests : BaseTests
         var type = TransactionType.Debit;
 
         var summary = DailySummaryEntity.Create(updatedAt, 500.00m, 300.00m);
-        DbContextMock.Object.DailySummaries.Add(summary);
-        await DbContextMock.Object.SaveChangesAsync();
+        DbContext.DailySummaries.Add(summary);
+        await DbContext.SaveChangesAsync();
 
         var message = new TransactionUpdated(Guid.NewGuid(), amount, type, updatedAt);
         var contextMock = new Mock<ConsumeContext<TransactionUpdated>>();
         contextMock.Setup(c => c.Message).Returns(message);
 
-        DbContextMock.Setup(db => db.DailySummaries.FirstOrDefaultAsync(s => s.Date == updatedAt, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(summary);
-
         // Act
         await _consumer.Consume(contextMock.Object);
 
         // Assert
-        Assert.That(summary.TotalDebits, Is.EqualTo(500.00m));
-        Assert.That(summary.TotalCredits, Is.EqualTo(500.00m));
-
-        DbContextMock.Verify(db => db.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        var updatedSummary = await DbContext.DailySummaries.FirstOrDefaultAsync(s => s.Date == updatedAt);
+        Assert.That(updatedSummary, Is.Not.Null);
+        Assert.That(updatedSummary!.TotalDebits, Is.EqualTo(500.00m));
+        Assert.That(updatedSummary.TotalCredits, Is.EqualTo(500.00m));
     }
 
     [Test]
@@ -60,13 +57,11 @@ public class TransactionUpdatedConsumerTests : BaseTests
         var contextMock = new Mock<ConsumeContext<TransactionUpdated>>();
         contextMock.Setup(c => c.Message).Returns(message);
 
-        DbContextMock.Setup(db => db.DailySummaries.FirstOrDefaultAsync(s => s.Date == updatedAt, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((DailySummaryEntity?)null);
-
         // Act
         await _consumer.Consume(contextMock.Object);
 
         // Assert
-        DbContextMock.Verify(db => db.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        var summaryCount = await DbContext.DailySummaries.CountAsync();
+        Assert.That(summaryCount, Is.EqualTo(0));
     }
 }

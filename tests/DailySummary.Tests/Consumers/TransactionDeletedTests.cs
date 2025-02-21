@@ -16,7 +16,7 @@ public class TransactionDeletedConsumerTests : BaseTests
     [SetUp]
     public void SetUp()
     {
-        _consumer = new TransactionDeletedConsumer(DbContextMock.Object);
+        _consumer = new TransactionDeletedConsumer(DbContext);
     }
 
     [Test]
@@ -30,26 +30,28 @@ public class TransactionDeletedConsumerTests : BaseTests
 
         var transaction = DailyTransactionEntity.Create(transactionId, date, amount, type);
         var summary = DailySummaryEntity.Create(date, 150.00m, 50.00m);
-        DbContextMock.Object.DailyTransactions.Add(transaction);
-        DbContextMock.Object.DailySummaries.Add(summary);
-        await DbContextMock.Object.SaveChangesAsync();
+
+        DbContext.DailyTransactions.Add(transaction);
+        DbContext.DailySummaries.Add(summary);
+        await DbContext.SaveChangesAsync();
 
         var message = new TransactionDeleted(transactionId);
         var contextMock = new Mock<ConsumeContext<TransactionDeleted>>();
         contextMock.Setup(c => c.Message).Returns(message);
 
-        DbContextMock.Setup(db => db.DailyTransactions.FirstOrDefaultAsync(t => t.Id == transactionId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(transaction);
-
-        DbContextMock.Setup(db => db.DailySummaries.FirstOrDefaultAsync(s => s.Date == date, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(summary);
-
         // Act
         await _consumer.Consume(contextMock.Object);
 
         // Assert
-        DbContextMock.Verify(db => db.DailyTransactions.Remove(It.IsAny<DailyTransactionEntity>()), Times.Once);
-        DbContextMock.Verify(db => db.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        var deletedTransaction = await DbContext.DailyTransactions.FindAsync(transactionId);
+        Assert.That(deletedTransaction, Is.Null);
+
+        var updatedSummary = await DbContext.DailySummaries.FirstOrDefaultAsync(s => s.Date == date);
+        Assert.That(updatedSummary, Is.Not.Null);
+        Assert.That(updatedSummary!.TotalCredits, Is.EqualTo(0));
+
+        var transactionCount = await DbContext.DailyTransactions.CountAsync();
+        Assert.That(transactionCount, Is.EqualTo(0));
     }
 
     [Test]
@@ -61,14 +63,14 @@ public class TransactionDeletedConsumerTests : BaseTests
         var contextMock = new Mock<ConsumeContext<TransactionDeleted>>();
         contextMock.Setup(c => c.Message).Returns(message);
 
-        DbContextMock.Setup(db => db.DailyTransactions.FirstOrDefaultAsync(t => t.Id == transactionId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((DailyTransactionEntity?)null);
-
         // Act
         await _consumer.Consume(contextMock.Object);
 
         // Assert
-        DbContextMock.Verify(db => db.DailyTransactions.Remove(It.IsAny<DailyTransactionEntity>()), Times.Never);
-        DbContextMock.Verify(db => db.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        var transactionCount = await DbContext.DailyTransactions.CountAsync();
+        Assert.That(transactionCount, Is.EqualTo(0));
+
+        var summaryCount = await DbContext.DailySummaries.CountAsync();
+        Assert.That(summaryCount, Is.EqualTo(0));
     }
 }

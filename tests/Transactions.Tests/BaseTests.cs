@@ -9,7 +9,7 @@ namespace Transactions.Tests;
 
 public abstract class BaseTests
 {
-    protected Mock<TransactionsDbContext> DbContextMock = null!;
+    protected TransactionsDbContext DbContext = null!;
     protected Mock<IPublishEndpoint> PublishEndpointMock = null!;
     protected IMapper Mapper = null!;
 
@@ -20,7 +20,7 @@ public abstract class BaseTests
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        DbContextMock = new Mock<TransactionsDbContext>(dbOptions);
+        DbContext = new TransactionsDbContext(dbOptions);
         PublishEndpointMock = new Mock<IPublishEndpoint>();
 
         var mapperConfig = new MapperConfiguration(cfg =>
@@ -29,5 +29,12 @@ public abstract class BaseTests
         });
 
         Mapper = mapperConfig.CreateMapper();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        DbContext.Database.EnsureDeleted();
+        DbContext.Dispose();
     }
 }

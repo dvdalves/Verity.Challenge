@@ -13,7 +13,7 @@ public class CreateTransactionHandlerTests : BaseTests
     [SetUp]
     public void SetUp()
     {
-        _handler = new CreateTransaction(DbContextMock.Object, PublishEndpointMock.Object);
+        _handler = new CreateTransaction(DbContext, PublishEndpointMock.Object);
     }
 
     [Test]

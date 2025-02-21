@@ -12,7 +12,7 @@ public class GetTransactionByIdHandlerTests : BaseTests
     [SetUp]
     public void SetUp()
     {
-        _handler = new GetTransactionById(DbContextMock.Object, Mapper);
+        _handler = new GetTransactionById(DbContext, Mapper);
     }
 
     [Test]
@@ -20,8 +20,8 @@ public class GetTransactionByIdHandlerTests : BaseTests
     {
         // Arrange
         var transaction = TransactionEntity.Create(200.00m, TransactionType.Credit);
-        DbContextMock.Object.Transactions.Add(transaction);
-        await DbContextMock.Object.SaveChangesAsync();
+        DbContext.Transactions.Add(transaction);
+        await DbContext.SaveChangesAsync();
 
         var query = new GetTransactionById.GetTransactionByIdQuery(transaction.Id);
 

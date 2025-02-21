@@ -14,7 +14,7 @@ public class DeleteTransactionHandlerTests : BaseTests
     [SetUp]
     public void SetUp()
     {
-        _handler = new DeleteTransaction(DbContextMock.Object, PublishEndpointMock.Object);
+        _handler = new DeleteTransaction(DbContext, PublishEndpointMock.Object);
     }
 
     [Test]
@@ -22,8 +22,8 @@ public class DeleteTransactionHandlerTests : BaseTests
     {
         // Arrange
         var transaction = TransactionEntity.Create(100.00m, TransactionType.Credit);
-        DbContextMock.Object.Transactions.Add(transaction);
-        await DbContextMock.Object.SaveChangesAsync();
+        DbContext.Transactions.Add(transaction);
+        await DbContext.SaveChangesAsync();
 
         var command = new DeleteTransaction.DeleteTransactionCommand(transaction.Id);
 
@@ -33,7 +33,7 @@ public class DeleteTransactionHandlerTests : BaseTests
         // Assert
         Assert.That(result, Is.True);
 
-        var deletedTransaction = await DbContextMock.Object.Transactions.FindAsync(transaction.Id);
+        var deletedTransaction = await DbContext.Transactions.FindAsync(transaction.Id);
         Assert.That(deletedTransaction, Is.Null);
 
         PublishEndpointMock.Verify(x =>

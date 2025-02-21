@@ -9,7 +9,7 @@ public class DailyTransactionEntity
     public decimal Amount { get; private set; }
     public TransactionType Type { get; private set; }
 
-    private DailyTransactionEntity() { }
+    protected DailyTransactionEntity() { }
 
     public static DailyTransactionEntity Create(Guid id, DateTime date, decimal amount, TransactionType type)
     {
