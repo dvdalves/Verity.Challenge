@@ -1,9 +1,5 @@
 ﻿using Application.Transaction.Handlers;
 using Domain.Entities;
-using FluentAssertions;
-using Infrastructure.Persistence;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using Shared.Enums;
 using Shared.Messages;
@@ -11,35 +7,14 @@ using Shared.Messages;
 namespace Transactions.Tests.Handlers;
 
 [TestFixture]
-public class DeleteTransactionHandlerTests : IDisposable
+public class DeleteTransactionHandlerTests : BaseTests
 {
-    private TransactionsDbContext? _dbContext;
-    private Mock<IPublishEndpoint>? _publishEndpointMock;
-    private DeleteTransaction? _handler;
+    private DeleteTransaction _handler = null!;
 
     [SetUp]
     public void SetUp()
     {
-        var dbOptions = new DbContextOptionsBuilder<TransactionsDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        _dbContext = new TransactionsDbContext(dbOptions);
-        _publishEndpointMock = new Mock<IPublishEndpoint>();
-
-        _handler = new DeleteTransaction(_dbContext!, _publishEndpointMock.Object);
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        _dbContext?.Dispose();
-    }
-
-    public void Dispose()
-    {
-        _dbContext?.Dispose();
-        GC.SuppressFinalize(this);
+        _handler = new DeleteTransaction(DbContextMock.Object, PublishEndpointMock.Object);
     }
 
     [Test]
@@ -47,20 +22,21 @@ public class DeleteTransactionHandlerTests : IDisposable
     {
         // Arrange
         var transaction = TransactionEntity.Create(100.00m, TransactionType.Credit);
-        _dbContext!.Transactions.Add(transaction);
-        await _dbContext.SaveChangesAsync();
+        DbContextMock.Object.Transactions.Add(transaction);
+        await DbContextMock.Object.SaveChangesAsync();
 
         var command = new DeleteTransaction.DeleteTransactionCommand(transaction.Id);
 
         // Act
-        var result = await _handler!.Handle(command, CancellationToken.None);
+        var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Should().BeTrue();
-        var deletedTransaction = await _dbContext.Transactions.FindAsync(transaction.Id);
-        deletedTransaction.Should().BeNull();
+        Assert.That(result, Is.True);
 
-        _publishEndpointMock!.Verify(x =>
+        var deletedTransaction = await DbContextMock.Object.Transactions.FindAsync(transaction.Id);
+        Assert.That(deletedTransaction, Is.Null);
+
+        PublishEndpointMock.Verify(x =>
             x.Publish(It.IsAny<TransactionDeleted>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -71,12 +47,12 @@ public class DeleteTransactionHandlerTests : IDisposable
         var command = new DeleteTransaction.DeleteTransactionCommand(Guid.NewGuid());
 
         // Act
-        var result = await _handler!.Handle(command, CancellationToken.None);
+        var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Should().BeFalse();
+        Assert.That(result, Is.False);
 
-        _publishEndpointMock!.Verify(x =>
+        PublishEndpointMock.Verify(x =>
             x.Publish(It.IsAny<TransactionDeleted>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

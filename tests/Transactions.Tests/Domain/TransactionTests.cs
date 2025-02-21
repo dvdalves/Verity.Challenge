@@ -18,23 +18,27 @@ public class TransactionTests
         var transaction = TransactionEntity.Create(amount, type);
 
         // Assert
-        Assert.NotNull(transaction);
-        Assert.That(transaction.Amount, Is.EqualTo(amount));
-        Assert.That(transaction.Type, Is.EqualTo(type));
-        Assert.That(transaction.Id, Is.Not.EqualTo(Guid.Empty));
-        Assert.LessOrEqual(transaction.CreatedAt, DateTime.UtcNow);
+        Assert.That(transaction, Is.Not.Null);
+        Assert.That(transaction.CreatedAt, Is.LessThanOrEqualTo(DateTime.UtcNow));
+        Assert.Multiple(() =>
+        {
+            Assert.That(transaction.Amount, Is.EqualTo(amount));
+            Assert.That(transaction.Type, Is.EqualTo(type));
+            Assert.That(transaction.Id, Is.Not.EqualTo(Guid.Empty));
+        });
     }
 
     [Test]
     public void CreateTransaction_InvalidAmount_ShouldThrowException()
     {
         // Arrange
-        decimal amount = -50.00m; // Valor inválido
+        decimal amount = -50.00m;
         var type = TransactionType.Debit;
 
         // Act & Assert
         var ex = Assert.Throws<TransactionDomainException>(() => TransactionEntity.Create(amount, type));
-        Assert.That(ex.Message, Is.EqualTo("Amount must be greater than zero."));
+        Assert.That(ex, Is.Not.Null);
+        Assert.That(ex!.Message, Is.EqualTo("O valor deve ser maior que zero."));
     }
 
     [Test]
@@ -49,9 +53,12 @@ public class TransactionTests
         transaction.Update(newAmount, newType);
 
         // Assert
-        Assert.That(transaction.Amount, Is.EqualTo(newAmount));
-        Assert.That(transaction.Type, Is.EqualTo(newType));
-        Assert.NotNull(transaction.UpdatedAt);
+        Assert.That(transaction.UpdatedAt, Is.Not.Null);
+        Assert.Multiple(() =>
+        {            
+            Assert.That(transaction.Amount, Is.EqualTo(newAmount));
+            Assert.That(transaction.Type, Is.EqualTo(newType));
+        });
     }
 
     [Test]
@@ -63,6 +70,7 @@ public class TransactionTests
 
         // Act & Assert
         var ex = Assert.Throws<TransactionDomainException>(() => transaction.Update(invalidAmount, TransactionType.Debit));
-        Assert.That(ex.Message, Is.EqualTo("Amount must be greater than zero."));
+        Assert.That(ex, Is.Not.Null);
+        Assert.That(ex!.Message, Is.EqualTo("O valor deve ser maior que zero."));
     }
 }

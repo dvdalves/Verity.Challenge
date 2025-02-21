@@ -1,44 +1,23 @@
 ﻿using Application.Transaction.Handlers;
 using AutoMapper;
 using Domain.Entities;
-using FluentAssertions;
-using Infrastructure.Configurations;
-using Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 using Shared.Enums;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Transactions.Tests.Handlers;
 
 [TestFixture]
-public class GetTransactionByIdHandlerTests
+public class GetTransactionByIdHandlerTests : BaseTests
 {
-    private TransactionsDbContext? _dbContext;
-    private IMapper? _mapper;
-    private GetTransactionById? _handler;
+    private GetTransactionById _handler = null!;
 
     [SetUp]
     public void SetUp()
     {
-        var dbOptions = new DbContextOptionsBuilder<TransactionsDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        _dbContext = new TransactionsDbContext(dbOptions);
-
-        var mapperConfig = new MapperConfiguration(cfg =>
-        {
-            cfg.AddProfile<TransactionProfile>();
-        });
-
-        _mapper = mapperConfig.CreateMapper();
-
-        _handler = new GetTransactionById(_dbContext, _mapper);
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        _dbContext.Dispose();
+        _handler = new GetTransactionById(DbContextMock.Object, Mapper);
     }
 
     [Test]
@@ -46,8 +25,8 @@ public class GetTransactionByIdHandlerTests
     {
         // Arrange
         var transaction = TransactionEntity.Create(200.00m, TransactionType.Credit);
-        _dbContext.Transactions.Add(transaction);
-        await _dbContext.SaveChangesAsync();
+        DbContextMock.Object.Transactions.Add(transaction);
+        await DbContextMock.Object.SaveChangesAsync();
 
         var query = new GetTransactionById.GetTransactionByIdQuery(transaction.Id);
 
@@ -55,10 +34,10 @@ public class GetTransactionByIdHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(transaction.Id);
-        result.Amount.Should().Be(transaction.Amount);
-        result.Type.Should().Be(transaction.Type);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result!.Id, Is.EqualTo(transaction.Id));
+        Assert.That(result.Amount, Is.EqualTo(transaction.Amount));
+        Assert.That(result.Type, Is.EqualTo(transaction.Type));
     }
 
     [Test]
@@ -71,6 +50,6 @@ public class GetTransactionByIdHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Should().BeNull();
+        Assert.That(result, Is.Null);
     }
 }

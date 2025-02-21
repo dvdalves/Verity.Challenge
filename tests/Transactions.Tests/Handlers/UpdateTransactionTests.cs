@@ -1,9 +1,5 @@
 ﻿using Application.Transaction.Handlers;
 using Domain.Entities;
-using FluentAssertions;
-using Infrastructure.Persistence;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using Shared.Enums;
 using Shared.Messages;
@@ -11,29 +7,14 @@ using Shared.Messages;
 namespace Transactions.Tests.Handlers;
 
 [TestFixture]
-public class UpdateTransactionHandlerTests
+public class UpdateTransactionHandlerTests : BaseTests
 {
-    private TransactionsDbContext? _dbContextMock;
-    private Mock<IPublishEndpoint>? _publishEndpointMock;
-    private UpdateTransaction? _handler;
+    private UpdateTransaction _handler = null!;
 
     [SetUp]
     public void SetUp()
     {
-        var dbOptions = new DbContextOptionsBuilder<TransactionsDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        _dbContextMock = new TransactionsDbContext(dbOptions);
-        _publishEndpointMock = new Mock<IPublishEndpoint>();
-
-        _handler = new UpdateTransaction(_dbContextMock, _publishEndpointMock.Object);
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        _dbContextMock!.Dispose();
+        _handler = new UpdateTransaction(DbContextMock.Object, PublishEndpointMock.Object);
     }
 
     [Test]
@@ -41,24 +22,24 @@ public class UpdateTransactionHandlerTests
     {
         // Arrange
         var transaction = TransactionEntity.Create(100.00m, TransactionType.Credit);
-        _dbContextMock!.Transactions.Add(transaction);
-        await _dbContextMock.SaveChangesAsync();
+        DbContextMock.Object.Transactions.Add(transaction);
+        await DbContextMock.Object.SaveChangesAsync();
 
         var command = new UpdateTransaction.UpdateTransactionCommand(transaction.Id, 250.00m, TransactionType.Debit);
 
         // Act
-        var result = await _handler!.Handle(command, CancellationToken.None);
+        var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Should().BeTrue();
+        Assert.That(result, Is.True);
 
-        var updatedTransaction = await _dbContextMock.Transactions.FindAsync(transaction.Id);
-        updatedTransaction.Should().NotBeNull();
-        updatedTransaction.Amount.Should().Be(250.00m);
-        updatedTransaction.Type.Should().Be(TransactionType.Debit);
-        updatedTransaction.UpdatedAt.Should().NotBeNull();
+        var updatedTransaction = await DbContextMock.Object.Transactions.FindAsync(transaction.Id);
+        Assert.That(updatedTransaction, Is.Not.Null);
+        Assert.That(updatedTransaction!.Amount, Is.EqualTo(250.00m));
+        Assert.That(updatedTransaction.Type, Is.EqualTo(TransactionType.Debit));
+        Assert.That(updatedTransaction.UpdatedAt, Is.Not.Null);
 
-        _publishEndpointMock!.Verify(x =>
+        PublishEndpointMock.Verify(x =>
             x.Publish(It.IsAny<TransactionUpdated>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -69,12 +50,12 @@ public class UpdateTransactionHandlerTests
         var command = new UpdateTransaction.UpdateTransactionCommand(Guid.NewGuid(), 300.00m, TransactionType.Credit);
 
         // Act
-        var result = await _handler!.Handle(command, CancellationToken.None);
+        var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Should().BeFalse();
+        Assert.That(result, Is.False);
 
-        _publishEndpointMock!.Verify(x =>
+        PublishEndpointMock.Verify(x =>
             x.Publish(It.IsAny<TransactionUpdated>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

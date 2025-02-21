@@ -1,44 +1,18 @@
 ﻿using Application.Transaction.Handlers;
-using AutoMapper;
 using Domain.Entities;
-using FluentAssertions;
-using Infrastructure.Configurations;
-using Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 using Shared.Enums;
 
 namespace Transactions.Tests.Handlers;
 
 [TestFixture]
-public class GetTransactionsHandlerTests
+public class GetTransactionsHandlerTests : BaseTests
 {
-    private TransactionsDbContext? _dbContext;
-    private IMapper? _mapper;
-    private GetTransactions? _handler;
+    private GetTransactions _handler = null!;
 
     [SetUp]
     public void SetUp()
     {
-        var dbOptions = new DbContextOptionsBuilder<TransactionsDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        _dbContext = new TransactionsDbContext(dbOptions);
-
-        var mapperConfig = new MapperConfiguration(cfg =>
-        {
-            cfg.AddProfile<TransactionProfile>();
-        });
-
-        _mapper = mapperConfig.CreateMapper();
-
-        _handler = new GetTransactions(_dbContext, _mapper);
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        _dbContext.Dispose();
+        _handler = new GetTransactions(DbContextMock.Object, Mapper);
     }
 
     [Test]
@@ -47,8 +21,8 @@ public class GetTransactionsHandlerTests
         // Arrange
         var transaction1 = TransactionEntity.Create(200.00m, TransactionType.Credit);
         var transaction2 = TransactionEntity.Create(150.00m, TransactionType.Debit);
-        _dbContext.Transactions.AddRange(transaction1, transaction2);
-        await _dbContext.SaveChangesAsync();
+        DbContextMock.Object.Transactions.AddRange(transaction1, transaction2);
+        await DbContextMock.Object.SaveChangesAsync();
 
         var query = new GetTransactions.GetTransactionsQuery();
 
@@ -56,10 +30,10 @@ public class GetTransactionsHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(2);
-        result.Should().ContainSingle(t => t.Id == transaction1.Id && t.Amount == transaction1.Amount);
-        result.Should().ContainSingle(t => t.Id == transaction2.Id && t.Amount == transaction2.Amount);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Count, Is.EqualTo(2));
+        Assert.That(result.Any(t => t.Id == transaction1.Id && t.Amount == transaction1.Amount), Is.True);
+        Assert.That(result.Any(t => t.Id == transaction2.Id && t.Amount == transaction2.Amount), Is.True);
     }
 
     [Test]
@@ -72,7 +46,7 @@ public class GetTransactionsHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().BeEmpty();
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.Empty);
     }
 }

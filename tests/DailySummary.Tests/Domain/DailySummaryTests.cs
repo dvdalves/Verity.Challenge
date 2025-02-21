@@ -17,12 +17,15 @@ public class DailySummaryTests
         var summary = DailySummaryEntity.Create(date, totalCredits, totalDebits);
 
         // Assert
-        Assert.NotNull(summary);
-        Assert.That(summary.Date, Is.EqualTo(date));
-        Assert.That(summary.TotalCredits, Is.EqualTo(totalCredits));
-        Assert.That(summary.TotalDebits, Is.EqualTo(totalDebits));
-        Assert.That(summary.Balance, Is.EqualTo(totalCredits - totalDebits));
-        Assert.That(summary.Id, Is.Not.EqualTo(Guid.Empty));
+        Assert.That(summary, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(summary.Date, Is.EqualTo(date));
+            Assert.That(summary.TotalCredits, Is.EqualTo(totalCredits));
+            Assert.That(summary.TotalDebits, Is.EqualTo(totalDebits));
+            Assert.That(summary.Balance, Is.EqualTo(totalCredits - totalDebits));
+            Assert.That(summary.Id, Is.Not.EqualTo(Guid.Empty));
+        });
     }
 
     [Test]
@@ -37,8 +40,11 @@ public class DailySummaryTests
         summary.Update(newTotalCredits, newTotalDebits);
 
         // Assert
-        Assert.That(summary.TotalCredits, Is.EqualTo(newTotalCredits));
-        Assert.That(summary.TotalDebits, Is.EqualTo(newTotalDebits));
-        Assert.That(summary.Balance, Is.EqualTo(newTotalCredits - newTotalDebits));
+        Assert.Multiple(() =>
+        {            
+            Assert.That(summary.TotalCredits, Is.EqualTo(newTotalCredits));
+            Assert.That(summary.TotalDebits, Is.EqualTo(newTotalDebits));
+            Assert.That(summary.Balance, Is.EqualTo(newTotalCredits - newTotalDebits));
+        });
     }
 }

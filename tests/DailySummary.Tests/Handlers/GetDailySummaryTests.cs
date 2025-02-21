@@ -1,44 +1,18 @@
 ﻿using Application.DailySummary.Handlers;
-using AutoMapper;
 using Domain.Entities;
-using FluentAssertions;
-using Infrastructure.Configurations;
-using Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 using static Application.DailySummary.Handlers.GetDailySummary;
 
 namespace DailySummary.Tests.Handlers;
 
 [TestFixture]
-public class GetDailySummaryHandlerTests
+public class GetDailySummaryHandlerTests : BaseTests
 {
-    private DailySummaryDbContext _dbContext = null!;
-    private IMapper _mapper = null!;
     private GetDailySummary _handler = null!;
 
     [SetUp]
     public void SetUp()
     {
-        var dbOptions = new DbContextOptionsBuilder<DailySummaryDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        _dbContext = new DailySummaryDbContext(dbOptions);
-
-        var mapperConfig = new MapperConfiguration(cfg =>
-        {
-            cfg.AddProfile<DailySummaryProfile>();
-        });
-
-        _mapper = mapperConfig.CreateMapper();
-
-        _handler = new GetDailySummary(_dbContext, _mapper);
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        _dbContext.Dispose();
+        _handler = new GetDailySummary(DbContext, Mapper);
     }
 
     [Test]
@@ -47,8 +21,8 @@ public class GetDailySummaryHandlerTests
         // Arrange
         var date = DateTime.UtcNow.Date;
         var summary = DailySummaryEntity.Create(date, 500.00m, 200.00m);
-        _dbContext.DailySummaries.Add(summary);
-        await _dbContext.SaveChangesAsync();
+        DbContext.DailySummaries.Add(summary);
+        await DbContext.SaveChangesAsync();
 
         var query = new GetDailySummaryQuery(date);
 
@@ -56,11 +30,11 @@ public class GetDailySummaryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Date.Should().Be(date);
-        result.TotalCredits.Should().Be(summary.TotalCredits);
-        result.TotalDebits.Should().Be(summary.TotalDebits);
-        result.Balance.Should().Be(summary.TotalCredits - summary.TotalDebits);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result!.Date, Is.EqualTo(date));
+        Assert.That(result.TotalCredits, Is.EqualTo(summary.TotalCredits));
+        Assert.That(result.TotalDebits, Is.EqualTo(summary.TotalDebits));
+        Assert.That(result.Balance, Is.EqualTo(summary.TotalCredits - summary.TotalDebits));
     }
 
     [Test]
@@ -73,6 +47,6 @@ public class GetDailySummaryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Should().BeNull();
+        Assert.That(result, Is.Null);
     }
 }

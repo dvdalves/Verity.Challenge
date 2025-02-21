@@ -1,8 +1,4 @@
 ﻿using Application.Transaction.Handlers;
-using FluentAssertions;
-using Infrastructure.Persistence;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using Shared.Enums;
 using Shared.Messages;
@@ -10,23 +6,14 @@ using Shared.Messages;
 namespace Transactions.Tests.Handlers;
 
 [TestFixture]
-public class CreateTransactionHandlerTests
+public class CreateTransactionHandlerTests : BaseTests
 {
-    private Mock<TransactionsDbContext>? _dbContextMock;
-    private Mock<IPublishEndpoint>? _publishEndpointMock;
-    private CreateTransaction? _handler;
+    private CreateTransaction _handler = null!;
 
     [SetUp]
     public void SetUp()
     {
-        var dbOptions = new DbContextOptionsBuilder<TransactionsDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        _dbContextMock = new Mock<TransactionsDbContext>(dbOptions);
-        _publishEndpointMock = new Mock<IPublishEndpoint>();
-
-        _handler = new CreateTransaction(_dbContextMock.Object, _publishEndpointMock.Object);
+        _handler = new CreateTransaction(DbContextMock.Object, PublishEndpointMock.Object);
     }
 
     [Test]
@@ -36,12 +23,12 @@ public class CreateTransactionHandlerTests
         var command = new CreateTransaction.CreateTransactionCommand(100.00m, TransactionType.Credit);
 
         // Act
-        var transactionId = await _handler!.Handle(command, CancellationToken.None);
+        var transactionId = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        transactionId.Should().NotBe(Guid.Empty);
+        Assert.That(transactionId, Is.Not.EqualTo(Guid.Empty));
 
-        _publishEndpointMock!.Verify(x =>
+        PublishEndpointMock.Verify(x =>
             x.Publish(It.IsAny<TransactionCreated>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -52,13 +39,12 @@ public class CreateTransactionHandlerTests
         var command = new CreateTransaction.CreateTransactionCommand(-10.00m, TransactionType.Credit);
 
         // Act
-        Func<Task> act = async () => await _handler!.Handle(command, CancellationToken.None);
+        async Task act() => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<Exception>()
-            .WithMessage("Amount must be greater than zero.");
+        Assert.That(async () => await act(), Throws.Exception.With.Message.EqualTo("O valor deve ser maior que zero."));
 
-        _publishEndpointMock!.Verify(x =>
+        PublishEndpointMock.Verify(x =>
             x.Publish(It.IsAny<TransactionCreated>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

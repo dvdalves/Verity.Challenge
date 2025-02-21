@@ -8,8 +8,12 @@ using System.Reflection;
 
 namespace Web.Api;
 
+/// <summary>
+/// </summary>
 public class Program
 {
+    /// <summary>
+    /// </summary>
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +26,6 @@ public class Program
         // RabbitMQ
         builder.Services.AddMassTransit(x =>
         {
-            // 🔹 Adiciona explicitamente os consumidores
             x.AddConsumer<TransactionCreatedConsumer>();
             x.AddConsumer<TransactionUpdatedConsumer>();
             x.AddConsumer<TransactionDeletedConsumer>();

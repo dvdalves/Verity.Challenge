@@ -7,8 +7,12 @@ using System.Reflection;
 
 namespace Web.Api;
 
+/// <summary>
+/// </summary>
 public class Program
 {
+    /// <summary>
+    /// </summary>
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);

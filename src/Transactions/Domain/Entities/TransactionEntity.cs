@@ -15,7 +15,7 @@ public class TransactionEntity
     public static TransactionEntity Create(decimal amount, TransactionType type)
     {
         return amount <= 0
-            ? throw new TransactionDomainException("Amount must be greater than zero.")
+            ? throw new TransactionDomainException("O valor deve ser maior que zero.")
             : new TransactionEntity
             {
                 Id = Guid.NewGuid(),
@@ -28,7 +28,7 @@ public class TransactionEntity
     public void Update(decimal amount, TransactionType type)
     {
         if (amount <= 0)
-            throw new TransactionDomainException("Amount must be greater than zero.");
+            throw new TransactionDomainException("O valor deve ser maior que zero.");
 
         Amount = amount;
         Type = type;
