@@ -12,8 +12,18 @@ Este projeto é um sistema baseado em microsserviços para gerenciar transaçõe
 - **MediatR (Padrão CQRS)**
 - **MassTransit (RabbitMQ)**
 - **AutoMapper**
-- **NUnit & Moq (Testes Unitários)**
+- **NUnit & Moq (Testes Unitários, InMemory Database)**
 - **Docker & Docker Compose**
+
+  
+## 📌 **Futuras Melhorias**
+🔹 Polly – Implementação de retries, circuit breakers e timeouts para resiliência  
+🔹 OpenTelemetry – Tracing distribuído para monitoramento detalhado das requisições  
+🔹 Datadog – Observabilidade e logs centralizados para melhor diagnóstico  
+🔹 Rate Limiting – Controle de taxa de requisições com Asp.NET Rate Limiting Middleware  
+🔹 Health Checks – Monitoramento de serviços com Asp.NET HealthChecks + UI  
+🔹 Kubernetes (K8s) – Orquestração e deploy escalável dos microsserviços  
+🔹 Frontend para consumir as APIs 
 
 ---
 
@@ -76,17 +86,26 @@ Botão direito na solution > Propriedades:
 
 ![image](https://github.com/user-attachments/assets/b2fe36a7-0f6b-4f21-ad99-08355b3d9846)
 
+
 Rode as APIs em múltiplos projetos:
+
 ![image](https://github.com/user-attachments/assets/bd004da3-0762-481d-bece-6350ef77b250)
 
+
 Inicie a aplicação:
+
 ![image](https://github.com/user-attachments/assets/6ea579eb-ec85-492c-9c2c-689a715ec1de)
 
+
 Swagger Transaction:
+
 ![image](https://github.com/user-attachments/assets/964933fa-9f88-41d2-8923-da928ab11922)
 
-Swagger Daily Summary
+
+Swagger Daily Summary:
+
 ![image](https://github.com/user-attachments/assets/716006d1-5464-4708-b237-a3a54ea2ad47)
+
 ---
 
 ## 🔄 **Arquitetura e Fluxo**
@@ -104,14 +123,9 @@ O projeto contém **testes unitários** utilizando **NUnit e Moq** utilizando ba
 Para rodar os testes, execute:
 
 ```sh
-dotnet test Verity.Challenge.Transactions.Tests/Verity.Challenge.Transactions.Tests.csproj
-dotnet test Verity.Challenge.DailySummary.Tests/Verity.Challenge.DailySummary.Tests.csproj
+dotnet test
 ```
 
----
+ou utilize sua IDE de preferência. Exemplo no Visual Studio:
 
-## 📌 **Futuras Melhorias**
-🔹 Implementação de **autenticação e autorização** usando **JWT + Keycloak**  
-🔹 Otimização do **cache** com **Redis** para melhorar a performance  
-🔹 Monitoramento e logging
-🔹 Frontend para consumir as APIs
+![image](https://github.com/user-attachments/assets/ba91e6b6-aac2-450b-b753-1f0795bce838)
