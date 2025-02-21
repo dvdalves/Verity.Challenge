@@ -31,9 +31,12 @@ public class GetTransactionsHandlerTests : BaseTests
 
         // Assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Count, Is.EqualTo(2));
-        Assert.That(result.Any(t => t.Id == transaction1.Id && t.Amount == transaction1.Amount), Is.True);
-        Assert.That(result.Any(t => t.Id == transaction2.Id && t.Amount == transaction2.Amount), Is.True);
+        Assert.That(result, Has.Count.EqualTo(2));
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Any(t => t.Id == transaction1.Id && t.Amount == transaction1.Amount), Is.True);
+            Assert.That(result.Any(t => t.Id == transaction2.Id && t.Amount == transaction2.Amount), Is.True);
+        });
     }
 
     [Test]

@@ -38,8 +38,11 @@ public class TransactionCreatedConsumerTests : BaseTests
         // Assert
         var createdTransaction = await DbContext.DailyTransactions.FirstOrDefaultAsync(t => t.Id == transactionId);
         Assert.That(createdTransaction, Is.Not.Null);
-        Assert.That(createdTransaction!.Amount, Is.EqualTo(amount));
-        Assert.That(createdTransaction.Type, Is.EqualTo(type));
+        Assert.Multiple(() =>
+        {
+            Assert.That(createdTransaction!.Amount, Is.EqualTo(amount));
+            Assert.That(createdTransaction.Type, Is.EqualTo(type));
+        });
 
         var createdSummary = await DbContext.DailySummaries.FirstOrDefaultAsync();
         Assert.That(createdSummary, Is.Not.Null);
@@ -72,5 +75,39 @@ public class TransactionCreatedConsumerTests : BaseTests
 
         var summaryCount = await DbContext.DailySummaries.CountAsync();
         Assert.That(summaryCount, Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task Consume_WhenTransactionExistsOnSameDate_ShouldUpdateSummary()
+    {
+        // Arrange
+        var transactionId = Guid.NewGuid();
+        var createdAt = DateTime.UtcNow.Date;
+        var amount = 200.00m;
+        var type = TransactionType.Credit;
+
+        var existingSummary = DailySummaryEntity.Create(createdAt, 500.00m, 300.00m);
+        DbContext.DailySummaries.Add(existingSummary);
+        await DbContext.SaveChangesAsync();
+
+        var message = new TransactionCreated(transactionId, amount, type, createdAt);
+        var contextMock = new Mock<ConsumeContext<TransactionCreated>>();
+        contextMock.Setup(c => c.Message).Returns(message);
+
+        // Act
+        await _consumer.Consume(contextMock.Object);
+
+        // Assert
+        var updatedSummary = await DbContext.DailySummaries.FirstOrDefaultAsync(s => s.Date == createdAt);
+        Assert.That(updatedSummary, Is.Not.Null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(updatedSummary!.TotalCredits, Is.EqualTo(700.00m));
+            Assert.That(updatedSummary.TotalDebits, Is.EqualTo(300.00m));
+        });
+
+        var transactionCount = await DbContext.DailyTransactions.CountAsync();
+        Assert.That(transactionCount, Is.EqualTo(1));
     }
 }

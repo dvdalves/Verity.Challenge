@@ -41,8 +41,11 @@ public class TransactionUpdatedConsumerTests : BaseTests
         // Assert
         var updatedSummary = await DbContext.DailySummaries.FirstOrDefaultAsync(s => s.Date == updatedAt);
         Assert.That(updatedSummary, Is.Not.Null);
-        Assert.That(updatedSummary!.TotalDebits, Is.EqualTo(500.00m));
-        Assert.That(updatedSummary.TotalCredits, Is.EqualTo(500.00m));
+        Assert.Multiple(() =>
+        {
+            Assert.That(updatedSummary!.TotalDebits, Is.EqualTo(500.00m));
+            Assert.That(updatedSummary.TotalCredits, Is.EqualTo(500.00m));
+        });
     }
 
     [Test]

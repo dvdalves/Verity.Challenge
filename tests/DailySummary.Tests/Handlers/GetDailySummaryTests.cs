@@ -31,10 +31,13 @@ public class GetDailySummaryHandlerTests : BaseTests
 
         // Assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Date, Is.EqualTo(date));
-        Assert.That(result.TotalCredits, Is.EqualTo(summary.TotalCredits));
-        Assert.That(result.TotalDebits, Is.EqualTo(summary.TotalDebits));
-        Assert.That(result.Balance, Is.EqualTo(summary.TotalCredits - summary.TotalDebits));
+        Assert.Multiple(() =>
+        {
+            Assert.That(result!.Date, Is.EqualTo(date));
+            Assert.That(result.TotalCredits, Is.EqualTo(summary.TotalCredits));
+            Assert.That(result.TotalDebits, Is.EqualTo(summary.TotalDebits));
+            Assert.That(result.Balance, Is.EqualTo(summary.TotalCredits - summary.TotalDebits));
+        });
     }
 
     [Test]

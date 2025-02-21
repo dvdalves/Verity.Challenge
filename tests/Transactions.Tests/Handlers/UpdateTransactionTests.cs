@@ -35,9 +35,12 @@ public class UpdateTransactionHandlerTests : BaseTests
 
         var updatedTransaction = await DbContext.Transactions.FindAsync(transaction.Id);
         Assert.That(updatedTransaction, Is.Not.Null);
-        Assert.That(updatedTransaction!.Amount, Is.EqualTo(250.00m));
-        Assert.That(updatedTransaction.Type, Is.EqualTo(TransactionType.Debit));
-        Assert.That(updatedTransaction.UpdatedAt, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(updatedTransaction!.Amount, Is.EqualTo(250.00m));
+            Assert.That(updatedTransaction.Type, Is.EqualTo(TransactionType.Debit));
+            Assert.That(updatedTransaction.UpdatedAt, Is.Not.Null);
+        });
 
         PublishEndpointMock.Verify(x =>
             x.Publish(It.IsAny<TransactionUpdated>(), It.IsAny<CancellationToken>()), Times.Once);

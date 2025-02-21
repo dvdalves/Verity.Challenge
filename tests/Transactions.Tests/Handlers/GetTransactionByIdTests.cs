@@ -30,9 +30,12 @@ public class GetTransactionByIdHandlerTests : BaseTests
 
         // Assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Id, Is.EqualTo(transaction.Id));
-        Assert.That(result.Amount, Is.EqualTo(transaction.Amount));
-        Assert.That(result.Type, Is.EqualTo(transaction.Type));
+        Assert.Multiple(() =>
+        {
+            Assert.That(result!.Id, Is.EqualTo(transaction.Id));
+            Assert.That(result.Amount, Is.EqualTo(transaction.Amount));
+            Assert.That(result.Type, Is.EqualTo(transaction.Type));
+        });
     }
 
     [Test]
