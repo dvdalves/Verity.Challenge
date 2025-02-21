@@ -1,8 +1,8 @@
-﻿using Application.Transaction.Events;
-using Domain.Enums;
-using MassTransit;
+﻿using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Shared.Enums;
+using Shared.Messages;
 using static Application.Transaction.Handlers.UpdateTransaction;
 
 namespace Application.Transaction.Handlers;

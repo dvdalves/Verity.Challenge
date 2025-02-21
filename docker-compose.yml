@@ -1,9 +1,7 @@
-version: "3.8"
-
 services:
-  postgres:
-    image: postgres:15
-    container_name: postgres_db
+  postgres_transactions:
+    image: postgres:17
+    container_name: postgres_transactions
     restart: always
     environment:
       POSTGRES_DB: verity_transactions
@@ -14,7 +12,22 @@ services:
     networks:
       - verity_network
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_transactions_data:/var/lib/postgresql/data
+
+  postgres_daily_summary:
+    image: postgres:17
+    container_name: postgres_daily_summary
+    restart: always
+    environment:
+      POSTGRES_DB: verity_daily_summary
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5431:5432"
+    networks:
+      - verity_network
+    volumes:
+      - postgres_daily_summary_data:/var/lib/postgresql/data
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -34,4 +47,5 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
+  postgres_transactions_data:
+  postgres_daily_summary_data:

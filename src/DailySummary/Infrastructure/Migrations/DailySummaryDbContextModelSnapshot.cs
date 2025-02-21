@@ -8,10 +8,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Verity.Challenge.Transactions.Migrations
+namespace Infrastructure.Migrations
 {
-    [DbContext(typeof(TransactionsDbContext))]
-    partial class TransactionsDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(DailySummaryDbContext))]
+    partial class DailySummaryDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -22,27 +22,24 @@ namespace Verity.Challenge.Transactions.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Verity.Challenge.Transactions.Domain.Entities.TransactionEntity", b =>
+            modelBuilder.Entity("Domain.Entities.DailySummaryEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("Amount")
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("TotalCredits")
                         .HasColumnType("numeric");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<decimal>("TotalDebits")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Transactions", (string)null);
+                    b.ToTable("DailySummaries");
                 });
 #pragma warning restore 612, 618
         }

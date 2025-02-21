@@ -8,3 +8,4 @@ public class TransactionsDbContext(DbContextOptions<TransactionsDbContext> optio
 {
     public DbSet<TransactionEntity> Transactions { get; set; } = default!;
 }
+

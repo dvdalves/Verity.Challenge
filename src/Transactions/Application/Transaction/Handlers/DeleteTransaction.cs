@@ -1,7 +1,7 @@
-﻿using Application.Transaction.Events;
-using MassTransit;
+﻿using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Shared.Messages;
 using static Application.Transaction.Handlers.DeleteTransaction;
 
 namespace Application.Transaction.Handlers;

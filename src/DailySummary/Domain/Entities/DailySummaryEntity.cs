@@ -15,7 +15,7 @@ public class DailySummaryEntity
         return new DailySummaryEntity
         {
             Id = Guid.NewGuid(),
-            Date = date,
+            Date = DateTime.SpecifyKind(date, DateTimeKind.Utc),
             TotalCredits = totalCredits,
             TotalDebits = totalDebits
         };

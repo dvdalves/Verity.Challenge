@@ -1,5 +1,5 @@
-﻿using Domain.Enums;
+﻿using Shared.Enums;
 
-namespace Application.Transaction.Events;
+namespace Shared.Messages;
 
 public record TransactionUpdated(Guid Id, decimal Amount, TransactionType Type, DateTime UpdatedAt);

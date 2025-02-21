@@ -1,11 +1,11 @@
 ﻿using Application.Transaction.Handlers;
 using AutoMapper;
 using Domain.Entities;
-using Domain.Enums;
 using FluentAssertions;
 using Infrastructure.Configurations;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Shared.Enums;
 
 namespace Transactions.Tests.Handlers;
 

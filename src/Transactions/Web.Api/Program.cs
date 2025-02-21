@@ -17,7 +17,6 @@ public class Program
             .AddInfrastructure(builder.Configuration)
             .AddAutoMapper(typeof(TransactionProfile));
 
-        //RabbitMQ
         builder.Services.AddMassTransit(x =>
         {
             x.UsingRabbitMq((context, cfg) =>

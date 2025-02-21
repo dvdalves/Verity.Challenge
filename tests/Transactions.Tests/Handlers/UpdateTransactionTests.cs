@@ -1,12 +1,12 @@
-﻿using Application.Transaction.Events;
-using Application.Transaction.Handlers;
+﻿using Application.Transaction.Handlers;
 using Domain.Entities;
-using Domain.Enums;
 using FluentAssertions;
 using Infrastructure.Persistence;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using Shared.Enums;
+using Shared.Messages;
 
 namespace Transactions.Tests.Handlers;
 
@@ -33,7 +33,7 @@ public class UpdateTransactionHandlerTests
     [TearDown]
     public void TearDown()
     {
-        _dbContextMock.Dispose();
+        _dbContextMock!.Dispose();
     }
 
     [Test]
@@ -41,13 +41,13 @@ public class UpdateTransactionHandlerTests
     {
         // Arrange
         var transaction = TransactionEntity.Create(100.00m, TransactionType.Credit);
-        _dbContextMock.Transactions.Add(transaction);
+        _dbContextMock!.Transactions.Add(transaction);
         await _dbContextMock.SaveChangesAsync();
 
         var command = new UpdateTransaction.UpdateTransactionCommand(transaction.Id, 250.00m, TransactionType.Debit);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        var result = await _handler!.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().BeTrue();
@@ -58,7 +58,7 @@ public class UpdateTransactionHandlerTests
         updatedTransaction.Type.Should().Be(TransactionType.Debit);
         updatedTransaction.UpdatedAt.Should().NotBeNull();
 
-        _publishEndpointMock.Verify(x =>
+        _publishEndpointMock!.Verify(x =>
             x.Publish(It.IsAny<TransactionUpdated>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -69,12 +69,12 @@ public class UpdateTransactionHandlerTests
         var command = new UpdateTransaction.UpdateTransactionCommand(Guid.NewGuid(), 300.00m, TransactionType.Credit);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        var result = await _handler!.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().BeFalse();
 
-        _publishEndpointMock.Verify(x =>
+        _publishEndpointMock!.Verify(x =>
             x.Publish(It.IsAny<TransactionUpdated>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

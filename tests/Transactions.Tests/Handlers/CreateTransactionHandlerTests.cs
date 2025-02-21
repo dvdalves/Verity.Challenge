@@ -1,11 +1,11 @@
-﻿using Application.Transaction.Events;
-using Application.Transaction.Handlers;
-using Domain.Enums;
+﻿using Application.Transaction.Handlers;
 using FluentAssertions;
 using Infrastructure.Persistence;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using Shared.Enums;
+using Shared.Messages;
 
 namespace Transactions.Tests.Handlers;
 

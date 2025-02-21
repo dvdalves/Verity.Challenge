@@ -1,6 +1,6 @@
 ﻿using Domain;
 using Domain.Entities;
-using Domain.Enums;
+using Shared.Enums;
 
 namespace Transactions.Tests.Domain;
 

@@ -1,4 +1,5 @@
-using Application;
+﻿using Application;
+using Application.Consumers;
 using Infrastructure;
 using Infrastructure.Configurations;
 using MassTransit;
@@ -17,20 +18,40 @@ public class Program
             .AddInfrastructure(builder.Configuration)
             .AddAutoMapper(typeof(DailySummaryProfile));
 
-        //RabbitMQ
+        // RabbitMQ
         builder.Services.AddMassTransit(x =>
         {
+            // 🔹 Adiciona explicitamente os consumidores
+            x.AddConsumer<TransactionCreatedConsumer>();
+            x.AddConsumer<TransactionUpdatedConsumer>();
+            x.AddConsumer<TransactionDeletedConsumer>();
+
             x.UsingRabbitMq((context, cfg) =>
             {
                 var rabbitHost = builder.Configuration["RabbitMQ:Host"] ?? "localhost";
                 var rabbitUser = builder.Configuration["RabbitMQ:Username"] ?? "guest";
                 var rabbitPass = builder.Configuration["RabbitMQ:Password"] ?? "guest";
+
                 cfg.Host(rabbitHost, h =>
                 {
                     h.Username(rabbitUser);
                     h.Password(rabbitPass);
                 });
-                cfg.ConfigureEndpoints(context);
+
+                cfg.ReceiveEndpoint("transaction-created-queue", e =>
+                {
+                    e.ConfigureConsumer<TransactionCreatedConsumer>(context);
+                });
+
+                cfg.ReceiveEndpoint("transaction-updated-queue", e =>
+                {
+                    e.ConfigureConsumer<TransactionUpdatedConsumer>(context);
+                });
+
+                cfg.ReceiveEndpoint("transaction-deleted-queue", e =>
+                {
+                    e.ConfigureConsumer<TransactionDeletedConsumer>(context);
+                });
             });
         });
 

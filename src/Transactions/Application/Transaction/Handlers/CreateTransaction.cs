@@ -1,8 +1,8 @@
-﻿using Application.Transaction.Events;
-using Domain.Entities;
-using Domain.Enums;
+﻿using Domain.Entities;
 using MassTransit;
 using MediatR;
+using Shared.Enums;
+using Shared.Messages;
 using static Application.Transaction.Handlers.CreateTransaction;
 
 namespace Application.Transaction.Handlers;
@@ -20,6 +20,7 @@ public class CreateTransaction(IApplicationDbContext _context, IPublishEndpoint 
         await _context.SaveChangesAsync(cancellationToken);
 
         var transactionEvent = new TransactionCreated(transaction.Id, transaction.Amount, transaction.Type, transaction.CreatedAt);
+
         await publishEndpoint.Publish(transactionEvent, cancellationToken);
 
         return transaction.Id;
