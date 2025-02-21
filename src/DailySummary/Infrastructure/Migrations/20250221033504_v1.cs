@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -23,6 +24,20 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_DailySummaries", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "DailyTransactions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DailyTransactions", x => x.Id);
+                });
         }
 
         /// <inheritdoc />
@@ -30,6 +45,9 @@ namespace Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "DailySummaries");
+
+            migrationBuilder.DropTable(
+                name: "DailyTransactions");
         }
     }
 }

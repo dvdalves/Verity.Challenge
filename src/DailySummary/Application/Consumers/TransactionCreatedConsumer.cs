@@ -12,26 +12,39 @@ public class TransactionCreatedConsumer(IApplicationDbContext _context) : IConsu
     {
         var message = context.Message;
 
-        var summary = await _context.DailySummaries
-            .FirstOrDefaultAsync(s => s.Date == message.CreatedAt.Date);
+        // Verificar se a transação já foi registrada
+        var existingTransaction = await _context.DailyTransactions
+            .AnyAsync(t => t.Id == message.Id);
 
-        if (summary == null)
+        if (!existingTransaction)
         {
-            summary = DailySummaryEntity.Create(message.CreatedAt.Date,
-                message.Type == TransactionType.Credit ? message.Amount : 0,
-                message.Type == TransactionType.Debit ? message.Amount : 0
-            );
+            // Criar uma nova entrada no histórico
+            var transaction = DailyTransactionEntity.Create(message.Id, message.CreatedAt, message.Amount, message.Type);
+            _context.DailyTransactions.Add(transaction);
 
-            _context.DailySummaries.Add(summary);
-        }
-        else
-        {
-            summary.Update(
-                summary.TotalCredits + (message.Type == TransactionType.Credit ? message.Amount : 0),
-                summary.TotalDebits + (message.Type == TransactionType.Debit ? message.Amount : 0)
-            );
-        }
+            // Atualizar o resumo diário
+            var summary = await _context.DailySummaries
+                .FirstOrDefaultAsync(s => s.Date == message.CreatedAt.Date);
 
-        await _context.SaveChangesAsync();
+            if (summary == null)
+            {
+                summary = DailySummaryEntity.Create(
+                    message.CreatedAt.Date,
+                    message.Type == TransactionType.Credit ? message.Amount : 0,
+                    message.Type == TransactionType.Debit ? message.Amount : 0
+                );
+
+                _context.DailySummaries.Add(summary);
+            }
+            else
+            {
+                summary.Update(
+                    summary.TotalCredits + (message.Type == TransactionType.Credit ? message.Amount : 0),
+                    summary.TotalDebits + (message.Type == TransactionType.Debit ? message.Amount : 0)
+                );
+            }
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

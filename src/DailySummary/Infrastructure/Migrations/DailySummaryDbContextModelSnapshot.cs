@@ -41,6 +41,26 @@ namespace Infrastructure.Migrations
 
                     b.ToTable("DailySummaries");
                 });
+
+            modelBuilder.Entity("Domain.Entities.DailyTransactionEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DailyTransactions");
+                });
 #pragma warning restore 612, 618
         }
     }

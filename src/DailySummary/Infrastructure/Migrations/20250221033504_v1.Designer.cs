@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DailySummaryDbContext))]
-    [Migration("20250220232422_v1")]
+    [Migration("20250221033504_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -43,6 +43,26 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DailySummaries");
+                });
+
+            modelBuilder.Entity("Domain.Entities.DailyTransactionEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DailyTransactions");
                 });
 #pragma warning restore 612, 618
         }
