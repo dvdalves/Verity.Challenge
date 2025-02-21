@@ -16,7 +16,7 @@ public class DailyTransactionEntity
         return new DailyTransactionEntity
         {
             Id = id,
-            Date = DateTime.SpecifyKind(date, DateTimeKind.Utc),
+            Date = date,
             Amount = amount,
             Type = type
         };

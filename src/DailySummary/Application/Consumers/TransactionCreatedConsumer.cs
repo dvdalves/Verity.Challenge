@@ -12,17 +12,14 @@ public class TransactionCreatedConsumer(IApplicationDbContext _context) : IConsu
     {
         var message = context.Message;
 
-        // Verificar se a transação já foi registrada
         var existingTransaction = await _context.DailyTransactions
             .AnyAsync(t => t.Id == message.Id);
 
         if (!existingTransaction)
         {
-            // Criar uma nova entrada no histórico
             var transaction = DailyTransactionEntity.Create(message.Id, message.CreatedAt, message.Amount, message.Type);
             _context.DailyTransactions.Add(transaction);
 
-            // Atualizar o resumo diário
             var summary = await _context.DailySummaries
                 .FirstOrDefaultAsync(s => s.Date == message.CreatedAt.Date);
 
