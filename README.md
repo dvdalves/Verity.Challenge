@@ -73,6 +73,7 @@ docker-compose up -d
 ### **3️⃣ Executando a Aplicação**
 Para rodar os microsserviços, pode serguir esse exemplo usando o Visual Studio.
 Botão direito na solution > Propriedades:
+
 ![image](https://github.com/user-attachments/assets/b2fe36a7-0f6b-4f21-ad99-08355b3d9846)
 
 Rode as APIs em múltiplos projetos:
