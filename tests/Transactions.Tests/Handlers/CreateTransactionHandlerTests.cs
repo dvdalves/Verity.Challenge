@@ -33,13 +33,16 @@ public class CreateTransactionHandlerTests : BaseTests
     }
 
     [Test]
-    public async Task Handle_InvalidAmount_ShouldThrowException()
+    public void Handle_InvalidAmount_ShouldThrowException()
     {
         // Arrange
         var command = new CreateTransaction.CreateTransactionCommand(-10.00m, TransactionType.Credit);
 
         // Act
-        async Task act() => await _handler.Handle(command, CancellationToken.None);
+        async Task act()
+        {
+            await _handler.Handle(command, CancellationToken.None);
+        }
 
         // Assert
         Assert.That(async () => await act(), Throws.Exception.With.Message.EqualTo("O valor deve ser maior que zero."));

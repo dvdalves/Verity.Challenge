@@ -2,12 +2,13 @@
 using Infrastructure.Configurations;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace DailySummary.Tests;
 
 public abstract class BaseTests
 {
-    protected DailySummaryDbContext DbContext = null!;
+    protected Mock<DailySummaryDbContext> DbContextMock = null!;
     protected IMapper Mapper = null!;
 
     [SetUp]
@@ -17,7 +18,10 @@ public abstract class BaseTests
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        DbContext = new DailySummaryDbContext(dbOptions);
+        var dbContext = new DailySummaryDbContext(dbOptions);
+        DbContextMock = new Mock<DailySummaryDbContext>(dbOptions);
+        DbContextMock.Setup(db => db.DailySummaries).Returns(dbContext.DailySummaries);
+        DbContextMock.Setup(db => db.DailyTransactions).Returns(dbContext.DailyTransactions);
 
         var mapperConfig = new MapperConfiguration(cfg =>
         {
@@ -25,11 +29,5 @@ public abstract class BaseTests
         });
 
         Mapper = mapperConfig.CreateMapper();
-    }
-
-    [TearDown]
-    public void BaseTearDown()
-    {
-        DbContext.Dispose();
     }
 }

@@ -1,11 +1,6 @@
 ﻿using Application.Transaction.Handlers;
-using AutoMapper;
 using Domain.Entities;
-using NUnit.Framework;
 using Shared.Enums;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Transactions.Tests.Handlers;
 

@@ -41,7 +41,7 @@ public class DailySummaryTests
 
         // Assert
         Assert.Multiple(() =>
-        {            
+        {
             Assert.That(summary.TotalCredits, Is.EqualTo(newTotalCredits));
             Assert.That(summary.TotalDebits, Is.EqualTo(newTotalDebits));
             Assert.That(summary.Balance, Is.EqualTo(newTotalCredits - newTotalDebits));

@@ -26,9 +26,6 @@ public class DailySummaryController(IMediator mediator) : ControllerBase
     {
         var summary = await mediator.Send(new GetDailySummaryQuery(date ?? DateTime.UtcNow));
 
-        if (summary is null)
-            return NotFound();
-
-        return Ok(summary);
+        return summary is null ? NotFound() : Ok(summary);
     }
 }

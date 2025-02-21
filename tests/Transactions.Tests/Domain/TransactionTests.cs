@@ -55,7 +55,7 @@ public class TransactionTests
         // Assert
         Assert.That(transaction.UpdatedAt, Is.Not.Null);
         Assert.Multiple(() =>
-        {            
+        {
             Assert.That(transaction.Amount, Is.EqualTo(newAmount));
             Assert.That(transaction.Type, Is.EqualTo(newType));
         });

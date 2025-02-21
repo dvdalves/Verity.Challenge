@@ -12,7 +12,7 @@ public class GetDailySummaryHandlerTests : BaseTests
     [SetUp]
     public void SetUp()
     {
-        _handler = new GetDailySummary(DbContext, Mapper);
+        _handler = new GetDailySummary(DbContextMock.Object, Mapper);
     }
 
     [Test]
@@ -21,8 +21,8 @@ public class GetDailySummaryHandlerTests : BaseTests
         // Arrange
         var date = DateTime.UtcNow.Date;
         var summary = DailySummaryEntity.Create(date, 500.00m, 200.00m);
-        DbContext.DailySummaries.Add(summary);
-        await DbContext.SaveChangesAsync();
+        DbContextMock.Object.DailySummaries.Add(summary);
+        await DbContextMock.Object.SaveChangesAsync();
 
         var query = new GetDailySummaryQuery(date);
 
