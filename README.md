@@ -11,7 +11,6 @@ Este projeto é um sistema baseado em microsserviços para gerenciar transaçõe
 - **Entity Framework Core (PostgreSQL)**
 - **MediatR (Padrão CQRS)**
 - **MassTransit (RabbitMQ)**
-- **FluentValidation**
 - **AutoMapper**
 - **NUnit & Moq (Testes Unitários)**
 - **Docker & Docker Compose**
@@ -33,7 +32,6 @@ Verity.Challenge
 │   ├── Application/
 │   ├── Domain/
 │   ├── Infrastructure/
-│   ├── Program.cs
 │
 │── DailySummary.Tests/                    # Testes unitários gerais
 │── Transactions.Tests/                    # Testes unitários gerais
@@ -73,18 +71,21 @@ docker-compose up -d
 ```
 
 ### **3️⃣ Executando a Aplicação**
-Para rodar os microsserviços individualmente, use os comandos:
+Para rodar os microsserviços, pode serguir esse exemplo usando o Visual Studio.
+Botão direito na solution > Propriedades:
+![image](https://github.com/user-attachments/assets/b2fe36a7-0f6b-4f21-ad99-08355b3d9846)
 
-```sh
-dotnet run --project Verity.Challenge.Transactions/Verity.Challenge.Transactions.csproj
-dotnet run --project Verity.Challenge.DailySummary/Verity.Challenge.DailySummary.csproj
-```
+Rode as APIs em múltiplos projetos:
+![image](https://github.com/user-attachments/assets/bd004da3-0762-481d-bece-6350ef77b250)
 
-Os serviços estarão disponíveis em:
-- **Transactions API:** `http://localhost:5000/swagger`
-- **Daily Summary API:** `http://localhost:5001/swagger`
-- **RabbitMQ Dashboard:** `http://localhost:15672` (Usuário: `guest`, Senha: `guest`)
+Inicie a aplicação:
+![image](https://github.com/user-attachments/assets/6ea579eb-ec85-492c-9c2c-689a715ec1de)
 
+Swagger Transaction:
+![image](https://github.com/user-attachments/assets/964933fa-9f88-41d2-8923-da928ab11922)
+
+Swagger Daily Summary
+![image](https://github.com/user-attachments/assets/716006d1-5464-4708-b237-a3a54ea2ad47)
 ---
 
 ## 🔄 **Arquitetura e Fluxo**
@@ -97,7 +98,7 @@ O sistema utiliza o **padrão CQRS** para separar **operações de leitura e esc
 ---
 
 ## ✅ **Testes**
-O projeto contém **testes unitários** e de **integração** utilizando **NUnit e Moq**.
+O projeto contém **testes unitários** utilizando **NUnit e Moq** utilizando banco em memória.
 
 Para rodar os testes, execute:
 
@@ -112,3 +113,4 @@ dotnet test Verity.Challenge.DailySummary.Tests/Verity.Challenge.DailySummary.Te
 🔹 Implementação de **autenticação e autorização** usando **JWT + Keycloak**  
 🔹 Otimização do **cache** com **Redis** para melhorar a performance  
 🔹 Monitoramento e logging
+🔹 Frontend para consumir as APIs
