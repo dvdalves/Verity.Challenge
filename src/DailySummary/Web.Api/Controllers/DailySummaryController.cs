@@ -15,7 +15,7 @@ public class DailySummaryController(IMediator mediator) : ControllerBase
     /// <summary>
     /// Obtém o resumo diário de transações.
     /// </summary>
-    /// <param name="date">Data para consulta. Se não informada, usa a data atual.</param>
+    /// <param name="date">Data para consulta. Se não informada, usa a data atual. Use o padrão yyyy/mm/dd.</param>
     /// <returns>Retorna o resumo diário das transações.</returns>
     /// <response code="200">Retorna o resumo diário das transações.</response>
     /// <response code="404">Nenhum resumo encontrado para a data informada.</response>

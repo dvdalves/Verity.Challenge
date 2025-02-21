@@ -24,14 +24,20 @@ public class TransactionUpdatedConsumerTests : BaseTests
     {
         // Arrange
         var updatedAt = DateTime.UtcNow.Date;
-        var amount = 200.00m;
-        var type = TransactionType.Debit;
+        var originalAmount = 500.00m;
+        var newAmount = 200.00m;
+        var oldType = TransactionType.Credit;
+        var newType = TransactionType.Debit;
 
-        var summary = DailySummaryEntity.Create(updatedAt, 500.00m, 300.00m);
+        var summary = DailySummaryEntity.Create(updatedAt, originalAmount, 300.00m);
         DbContext.DailySummaries.Add(summary);
+
+        var transaction = DailyTransactionEntity.Create(Guid.NewGuid(), updatedAt, originalAmount, oldType);
+        DbContext.DailyTransactions.Add(transaction);
+
         await DbContext.SaveChangesAsync();
 
-        var message = new TransactionUpdated(Guid.NewGuid(), amount, type, updatedAt);
+        var message = new TransactionUpdated(transaction.Id, newAmount, newType, updatedAt);
         var contextMock = new Mock<ConsumeContext<TransactionUpdated>>();
         contextMock.Setup(c => c.Message).Returns(message);
 
@@ -43,20 +49,25 @@ public class TransactionUpdatedConsumerTests : BaseTests
         Assert.That(updatedSummary, Is.Not.Null);
         Assert.Multiple(() =>
         {
-            Assert.That(updatedSummary!.TotalDebits, Is.EqualTo(500.00m));
-            Assert.That(updatedSummary.TotalCredits, Is.EqualTo(500.00m));
+            Assert.That(updatedSummary!.TotalCredits, Is.EqualTo(0));
+            Assert.That(updatedSummary.TotalDebits, Is.EqualTo(200.00m));
         });
     }
 
     [Test]
-    public async Task Consume_WhenSummaryDoesNotExist_ShouldDoNothing()
+    public async Task Consume_WhenSummaryDoesNotExist_ShouldCreateNewSummary()
     {
         // Arrange
         var updatedAt = DateTime.UtcNow.Date;
         var amount = 300.00m;
         var type = TransactionType.Credit;
+        var transactionId = Guid.NewGuid();
 
-        var message = new TransactionUpdated(Guid.NewGuid(), amount, type, updatedAt);
+        var transaction = DailyTransactionEntity.Create(transactionId, updatedAt, amount, type);
+        DbContext.DailyTransactions.Add(transaction);
+        await DbContext.SaveChangesAsync();
+
+        var message = new TransactionUpdated(transactionId, amount, type, updatedAt);
         var contextMock = new Mock<ConsumeContext<TransactionUpdated>>();
         contextMock.Setup(c => c.Message).Returns(message);
 
@@ -64,7 +75,12 @@ public class TransactionUpdatedConsumerTests : BaseTests
         await _consumer.Consume(contextMock.Object);
 
         // Assert
-        var summaryCount = await DbContext.DailySummaries.CountAsync();
-        Assert.That(summaryCount, Is.EqualTo(0));
+        var summary = await DbContext.DailySummaries.FirstOrDefaultAsync(s => s.Date == updatedAt);
+        Assert.That(summary, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(summary!.TotalCredits, Is.EqualTo(amount));
+            Assert.That(summary.TotalDebits, Is.EqualTo(0));
+        });
     }
 }

@@ -38,7 +38,7 @@ public class DailyTransactionTests
         TransactionType newType = TransactionType.Debit;
 
         // Act
-        transaction.Update(newAmount, newType);
+        transaction.Update(newAmount, newType, DateTime.UtcNow);
 
         // Assert
         Assert.Multiple(() =>

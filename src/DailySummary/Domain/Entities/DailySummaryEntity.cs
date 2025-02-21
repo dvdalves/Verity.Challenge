@@ -23,7 +23,7 @@ public class DailySummaryEntity
 
     public void Update(decimal totalCredits, decimal totalDebits)
     {
-        TotalCredits = totalCredits;
-        TotalDebits = totalDebits;
+        TotalCredits = Math.Max(0, totalCredits);
+        TotalDebits = Math.Max(0, totalDebits);
     }
 }

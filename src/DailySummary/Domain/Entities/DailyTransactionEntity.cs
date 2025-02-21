@@ -22,9 +22,10 @@ public class DailyTransactionEntity
         };
     }
 
-    public void Update(decimal amount, TransactionType type)
+    public void Update(decimal amount, TransactionType type, DateTime date)
     {
         Amount = amount;
         Type = type;
+        Date = date;
     }
 }
