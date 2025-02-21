@@ -58,8 +58,8 @@ public class TransactionUpdatedConsumer(IApplicationDbContext _context) : IConsu
         else
         {
             newSummary.Update(
-                (newType == TransactionType.Credit ? newAmount : 0),
-                (newType == TransactionType.Debit ? newAmount : 0)
+                newType == TransactionType.Credit ? newAmount : 0,
+                newType == TransactionType.Debit ? newAmount : 0
             );
         }
 
