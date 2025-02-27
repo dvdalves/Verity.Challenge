@@ -2,6 +2,7 @@
 using Domain.Entities;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Moq;
 using Shared.Enums;
 using Shared.Messages;
@@ -12,11 +13,13 @@ namespace DailySummary.Tests.Consumers;
 public class TransactionCreatedConsumerTests : BaseTests
 {
     private TransactionCreatedConsumer _consumer = null!;
+    private Mock<IDistributedCache> _cacheMock = null!;
 
     [SetUp]
     public void SetUp()
     {
-        _consumer = new TransactionCreatedConsumer(DbContext);
+        _cacheMock = new Mock<IDistributedCache>();
+        _consumer = new TransactionCreatedConsumer(DbContext, _cacheMock.Object);
     }
 
     [Test]
@@ -46,6 +49,8 @@ public class TransactionCreatedConsumerTests : BaseTests
 
         var createdSummary = await DbContext.DailySummaries.FirstOrDefaultAsync();
         Assert.That(createdSummary, Is.Not.Null);
+
+        _cacheMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Test]
@@ -75,6 +80,8 @@ public class TransactionCreatedConsumerTests : BaseTests
 
         var summaryCount = await DbContext.DailySummaries.CountAsync();
         Assert.That(summaryCount, Is.EqualTo(0));
+
+        _cacheMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Test]
@@ -109,5 +116,7 @@ public class TransactionCreatedConsumerTests : BaseTests
 
         var transactionCount = await DbContext.DailyTransactions.CountAsync();
         Assert.That(transactionCount, Is.EqualTo(1));
+
+        _cacheMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

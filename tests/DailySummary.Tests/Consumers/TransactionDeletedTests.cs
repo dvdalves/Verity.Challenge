@@ -2,6 +2,7 @@
 using Domain.Entities;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Moq;
 using Shared.Enums;
 using Shared.Messages;
@@ -12,11 +13,13 @@ namespace DailySummary.Tests.Consumers;
 public class TransactionDeletedConsumerTests : BaseTests
 {
     private TransactionDeletedConsumer _consumer = null!;
+    private Mock<IDistributedCache> _cacheMock = null!;
 
     [SetUp]
     public void SetUp()
     {
-        _consumer = new TransactionDeletedConsumer(DbContext);
+        _cacheMock = new Mock<IDistributedCache>();
+        _consumer = new TransactionDeletedConsumer(DbContext, _cacheMock.Object);
     }
 
     [Test]
@@ -52,6 +55,8 @@ public class TransactionDeletedConsumerTests : BaseTests
 
         var transactionCount = await DbContext.DailyTransactions.CountAsync();
         Assert.That(transactionCount, Is.EqualTo(0));
+
+        _cacheMock.Verify(c => c.RemoveAsync(It.Is<string>(key => key == $"daily-summary:{date:yyyy-MM-dd}"), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Test]
@@ -72,5 +77,7 @@ public class TransactionDeletedConsumerTests : BaseTests
 
         var summaryCount = await DbContext.DailySummaries.CountAsync();
         Assert.That(summaryCount, Is.EqualTo(0));
+
+        _cacheMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

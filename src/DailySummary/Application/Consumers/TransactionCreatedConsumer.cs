@@ -1,12 +1,13 @@
 ﻿using Domain.Entities;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Shared.Enums;
 using Shared.Messages;
 
 namespace Application.Consumers;
 
-public class TransactionCreatedConsumer(IApplicationDbContext _context) : IConsumer<TransactionCreated>
+public class TransactionCreatedConsumer(IApplicationDbContext _context, IDistributedCache _cache) : IConsumer<TransactionCreated>
 {
     public async Task Consume(ConsumeContext<TransactionCreated> context)
     {
@@ -42,6 +43,9 @@ public class TransactionCreatedConsumer(IApplicationDbContext _context) : IConsu
             }
 
             await _context.SaveChangesAsync();
+
+            var cacheKey = $"daily-summary:{message.CreatedAt.Date:yyyy-MM-dd}";
+            await _cache.RemoveAsync(cacheKey);
         }
     }
 }
