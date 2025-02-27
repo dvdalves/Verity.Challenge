@@ -32,7 +32,7 @@ public class TransactionUpdatedConsumerTests : BaseTests
         var oldType = TransactionType.Credit;
         var newType = TransactionType.Debit;
 
-        var summary = DailySummaryEntity.Create(updatedAt, originalAmount, 300.00m);
+        var summary = DailySummaryEntity.Create(updatedAt, 500.00m, 300.00m);
         DbContext.DailySummaries.Add(summary);
 
         var transaction = DailyTransactionEntity.Create(Guid.NewGuid(), updatedAt, originalAmount, oldType);
@@ -52,12 +52,13 @@ public class TransactionUpdatedConsumerTests : BaseTests
         Assert.That(updatedSummary, Is.Not.Null);
         Assert.Multiple(() =>
         {
-            Assert.That(updatedSummary!.TotalCredits, Is.EqualTo(0));
-            Assert.That(updatedSummary.TotalDebits, Is.EqualTo(200.00m));
+            Assert.That(updatedSummary!.TotalCredits, Is.EqualTo(500.00m - originalAmount));
+            Assert.That(updatedSummary.TotalDebits, Is.EqualTo(300.00m + newAmount));
         });
 
         _cacheMock.Verify(c => c.RemoveAsync(
-            It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            It.Is<string>(key => key == $"daily-summary:{updatedAt:yyyy-MM-dd}"),
+            It.IsAny<CancellationToken>()),
             Times.AtLeastOnce);
     }
 
