@@ -119,7 +119,19 @@ Caso esteja utilizando **Docker**, as dependências podem ser iniciadas com:
 docker-compose up -d
 ```
 
-### **3️⃣ Executando a Aplicação**
+### **3️⃣ Aplicando as Migrations**
+Após configurar o banco, execute as migrations para garantir que o esquema de dados esteja atualizado. No Package Manager Console do Visual Studio, selecione o projeto correto (Infrastructure) antes de rodar o comando:
+
+```sh
+update-database
+```
+Execute para cada microsserviço:
+
+![image](https://github.com/user-attachments/assets/2daae9fc-fb66-43d8-9fbc-a08b66ed8060)
+
+---
+
+### **4️⃣ Executando a Aplicação**
 Para rodar os microsserviços, pode serguir esse exemplo usando o Visual Studio.
 Botão direito na solution > Propriedades:
 
@@ -155,7 +167,6 @@ Logar com o usuário salvo no banco SQLite:
   "password": "VerityChallenge@123"
 }
 ```
----
 
 ## 🔄 **Arquitetura e Fluxo**
 O sistema utiliza o **padrão CQRS** para separar **operações de leitura e escrita**, garantindo maior **desempenho e escalabilidade**. Além disso, usa **RabbitMQ** para comunicação assíncrona entre microsserviços e **Redis** para otimizar a recuperação de dados.
