@@ -3,6 +3,14 @@
 ## 📌 Visão Geral
 Este projeto é um sistema baseado em microsserviços para gerenciar transações financeiras e gerar um resumo diário consolidado. O sistema foi projetado para garantir escalabilidade e resiliência, utilizando Clean Architecture, CQRS, MediatR, MassTransit (RabbitMQ), Entity Framework Core, Redis (Cache) e JWT para autenticação. Além disso, possui suporte a Swagger com autenticação e testes automatizados com NUnit.
 
+🚨 Importante: O fluxo de autenticação atual não é o ideal para um ambiente de produção. O Keycloak seria a abordagem recomendada para gerenciar usuários e autenticação, permitindo maior flexibilidade e segurança, além de armazenar usuários em um banco de dados adequado. No entanto, para simplificação do desafio, foi implementada uma AuthAPI separada que utiliza JWT e Identity com SQLite.
+
+🔹 **Fluxo Recomendado (Keycloak)**  
+- O Keycloak gerenciaria a autenticação e autorização de forma centralizada.  
+- A API de autenticação seria eliminada e as APIs consumiriam diretamente um Identity Provider (IdP) confiável.  
+- O Keycloak permitiria usuários, papéis (roles) e permissões mais avançadas.  
+- O sistema poderia se integrar com OAuth 2.0, OpenID Connect e LDAP para maior segurança.  
+
 ---
 
 ## 🚀 **Tecnologias Utilizadas**
@@ -24,10 +32,13 @@ Este projeto é um sistema baseado em microsserviços para gerenciar transaçõe
 🔹 **Polly** – Implementação de retries, circuit breakers e timeouts para resiliência  
 🔹 **OpenTelemetry** – Tracing distribuído para monitoramento detalhado das requisições  
 🔹 **Datadog** – Observabilidade e logs centralizados para melhor diagnóstico  
-🔹 **Rate Limiting** – Controle de taxa de requisições com Asp.NET Rate Limiting Middleware  
-🔹 **Health Checks** – Monitoramento de serviços com Asp.NET HealthChecks + UI  
 🔹 **Kubernetes (K8s)** – Orquestração e deploy escalável dos microsserviços  
-🔹 **Frontend** para consumir as APIs
+🔹 **Frontend** para consumir as APIs  
+🔹 **Testes de Carga** – Simulação de múltiplos usuários simultâneos com k6  
+🔹 **Separação de Banco para CQRS** – Uso de bancos distintos para leitura e escrita, garantindo escalabilidade e performance:  
+-  **Banco de Escrita** – PostgreSQL para operações transacionais  
+-  **Banco de Leitura** – Replica otimizada para consultas rápidas (Event Sourcing ou caching avançado)  
+-  **Sincronização Assíncrona** – Atualização entre bancos via eventos no RabbitMQ  
 
 ---
 
