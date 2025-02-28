@@ -1,29 +1,33 @@
 # Verity Challenge - Gerenciamento de Transações e Resumo Diário
 
 ## 📌 Visão Geral
-Este projeto é um sistema baseado em microsserviços para gerenciar transações financeiras e gerar um resumo diário consolidado. O sistema foi projetado para garantir escalabilidade e resiliência, utilizando Clean Architecure, CQRS, MediatR, MassTransit (RabbitMQ), Entity Framework Core e NUnit para testes.
+Este projeto é um sistema baseado em microsserviços para gerenciar transações financeiras e gerar um resumo diário consolidado. O sistema foi projetado para garantir escalabilidade e resiliência, utilizando Clean Architecture, CQRS, MediatR, MassTransit (RabbitMQ), Entity Framework Core, Redis (Cache) e JWT para autenticação. Além disso, possui suporte a Swagger com autenticação e testes automatizados com NUnit.
 
 ---
 
-## 🚀 Tecnologias Utilizadas
+## 🚀 **Tecnologias Utilizadas**
 - **C# (.NET 8)**
 - **ASP.NET Core Web API**
-- **Entity Framework Core (PostgreSQL)**
+- **Entity Framework Core (PostgreSQL & SQLite)**
+- **Autenticação JWT**
+- **Swagger com suporte a autenticação**
 - **MediatR (Padrão CQRS)**
 - **MassTransit (RabbitMQ)**
+- **StackExchange.Redis (Cache)**
 - **AutoMapper**
 - **NUnit & Moq (Testes Unitários, InMemory Database)**
 - **Docker & Docker Compose**
 
-  
+
 ## 📌 **Futuras Melhorias**
-🔹 Polly – Implementação de retries, circuit breakers e timeouts para resiliência  
-🔹 OpenTelemetry – Tracing distribuído para monitoramento detalhado das requisições  
-🔹 Datadog – Observabilidade e logs centralizados para melhor diagnóstico  
-🔹 Rate Limiting – Controle de taxa de requisições com Asp.NET Rate Limiting Middleware  
-🔹 Health Checks – Monitoramento de serviços com Asp.NET HealthChecks + UI  
-🔹 Kubernetes (K8s) – Orquestração e deploy escalável dos microsserviços  
-🔹 Frontend para consumir as APIs 
+🔹 **Keycloak** – Gerenciamento centralizado de usuários e autenticação  
+🔹 **Polly** – Implementação de retries, circuit breakers e timeouts para resiliência  
+🔹 **OpenTelemetry** – Tracing distribuído para monitoramento detalhado das requisições  
+🔹 **Datadog** – Observabilidade e logs centralizados para melhor diagnóstico  
+🔹 **Rate Limiting** – Controle de taxa de requisições com Asp.NET Rate Limiting Middleware  
+🔹 **Health Checks** – Monitoramento de serviços com Asp.NET HealthChecks + UI  
+🔹 **Kubernetes (K8s)** – Orquestração e deploy escalável dos microsserviços  
+🔹 **Frontend** para consumir as APIs
 
 ---
 
@@ -31,20 +35,44 @@ Este projeto é um sistema baseado em microsserviços para gerenciar transaçõe
 
 ```
 Verity.Challenge
-│── Verity.Challenge.Transactions/         # Microsserviço de Transações Financeiras
-│   ├── API/                               # Camada de Controllers e Middlewares e configurações principais
-│   ├── Application/                       # Camada de Aplicação (CQRS, Handlers, DTOs)
-│   ├── Domain/                            # Camada de Domínio (Entidades e Regras de Negócio)
-│   ├── Infrastructure/                    # Infraestrutura (Banco, Mensageria, Configurações)
-│
-│── Verity.Challenge.DailySummary/         # Microsserviço de Resumo Diário
-│   ├── API/
-│   ├── Application/
-│   ├── Domain/
-│   ├── Infrastructure/
-│
-│── DailySummary.Tests/                    # Testes unitários gerais
-│── Transactions.Tests/                    # Testes unitários gerais
+│── src/
+│   │
+│   ├── Verity.Challenge.AuthAPI/         # API de Autenticação (Identity + JWT)
+│   │   ├── Controllers/                   # Endpoints de Login e Registro
+│   │   ├── Data/                          # Configuração do banco SQLite + Identity
+│   │   ├── Migrations/                    # Migrações do banco de dados
+│   │   ├── Models/                        # Modelos de requisição e usuários
+│   │   ├── appsettings.json                # Configuração da API
+│   │   ├── Program.cs                      # Configuração principal
+│   │
+│   ├── Verity.Challenge.Transactions/    # Microsserviço de Transações Financeiras
+│   │   ├── Web.Api/                        # Camada de Controllers, Middlewares e Configurações
+│   │   ├── Application/                    # Camada de Aplicação (CQRS, Handlers, DTOs)
+│   │   ├── Domain/                         # Camada de Domínio (Entidades e Regras de Negócio)
+│   │   ├── Infrastructure/                 # Infraestrutura (Banco, Mensageria, Configurações)
+│   │
+│   ├── Verity.Challenge.DailySummary/    # Microsserviço de Resumo Diário
+│   │   ├── Web.Api/
+│   │   ├── Application/
+│   │   ├── Domain/
+│   │   ├── Infrastructure/
+│   │
+│   ├── Shared/                           # Código compartilhado entre microsserviços
+│   │   ├── Enums/                         # Enumerações compartilhadas
+│   │   ├── Messages/                      # Mensagens para RabbitMQ
+│   │
+│── tests/
+│   │
+│   ├── Verity.Challenge.DailySummary.Tests/  # Testes do Resumo Diário
+│   │   ├── Consumers/                         # Testes de Mensageria
+│   │   ├── Domain/                            # Testes de Domínio
+│   │   ├── Handlers/                          # Testes dos Handlers CQRS
+│   │   ├── BaseTests.cs                       # Configuração base para testes
+│   │
+│   ├── Verity.Challenge.Transactions.Tests/  # Testes das Transações
+│   │   ├── Domain/
+│   │   ├── Handlers/
+│   │   ├── BaseTests.cs
 │
 │── docker-compose.yml                     # Configuração do Docker para dependências
 ```
@@ -87,9 +115,8 @@ Botão direito na solution > Propriedades:
 ![image](https://github.com/user-attachments/assets/b2fe36a7-0f6b-4f21-ad99-08355b3d9846)
 
 
-Rode as APIs em múltiplos projetos:
-
-![image](https://github.com/user-attachments/assets/bd004da3-0762-481d-bece-6350ef77b250)
+Rode em múltiplos projetos:
+![image](https://github.com/user-attachments/assets/e1f559ba-d054-4c8c-9ef6-a2d4fe2d18f5)
 
 
 Inicie a aplicação:
@@ -106,14 +133,30 @@ Swagger Daily Summary:
 
 ![image](https://github.com/user-attachments/assets/716006d1-5464-4708-b237-a3a54ea2ad47)
 
+Swagger Auth:
+![image](https://github.com/user-attachments/assets/0c79e039-a183-4712-b1c2-dcb6621bcff7)
+
+Logar com o usuário salvo no banco SQLite:
+
+```json
+{
+  "username": "admin",
+  "password": "VerityChallenge@123"
+}
+```
 ---
 
 ## 🔄 **Arquitetura e Fluxo**
-O sistema utiliza o **padrão CQRS** para separar **operações de leitura e escrita**, garantindo maior **desempenho e escalabilidade**.
+O sistema utiliza o **padrão CQRS** para separar **operações de leitura e escrita**, garantindo maior **desempenho e escalabilidade**. Além disso, usa **RabbitMQ** para comunicação assíncrona entre microsserviços e **Redis** para otimizar a recuperação de dados.
 
-1. O **microsserviço de Transações** recebe uma requisição para criar/editar/deletar uma transação.
-2. Após a persistência no banco, um **evento é publicado no RabbitMQ**.
-3. O **microsserviço de Resumo Diário** consome essa mensagem para atualizar o saldo diário.
+1. O **usuário se autentica** na **AuthAPI**, que gera um **token JWT** para autorização nas APIs.
+2. O **microsserviço de Transações** recebe uma requisição para **criar/editar/deletar** uma transação.
+3. Após a persistência no banco, um **evento é publicado no RabbitMQ**.
+4. O **microsserviço de Resumo Diário** consome essa mensagem para **atualizar o saldo diário**.
+5. Para melhorar o desempenho, os dados do resumo diário são **armazenados em cache no Redis**.
+6. Quando uma requisição de leitura é feita, o sistema **verifica primeiro no cache** antes de buscar no banco de dados.
+
+🚀 Isso garante **eficiência, escalabilidade e menor latência** no acesso às informações!
 
 ---
 
