@@ -2,6 +2,7 @@
 using Domain.Entities;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Moq;
 using Shared.Enums;
 using Shared.Messages;
@@ -12,11 +13,13 @@ namespace DailySummary.Tests.Consumers;
 public class TransactionUpdatedConsumerTests : BaseTests
 {
     private TransactionUpdatedConsumer _consumer = null!;
+    private Mock<IDistributedCache> _cacheMock = null!;
 
     [SetUp]
     public void SetUp()
     {
-        _consumer = new TransactionUpdatedConsumer(DbContext);
+        _cacheMock = new Mock<IDistributedCache>();
+        _consumer = new TransactionUpdatedConsumer(DbContext, _cacheMock.Object);
     }
 
     [Test]
@@ -29,7 +32,7 @@ public class TransactionUpdatedConsumerTests : BaseTests
         var oldType = TransactionType.Credit;
         var newType = TransactionType.Debit;
 
-        var summary = DailySummaryEntity.Create(updatedAt, originalAmount, 300.00m);
+        var summary = DailySummaryEntity.Create(updatedAt, 500.00m, 300.00m);
         DbContext.DailySummaries.Add(summary);
 
         var transaction = DailyTransactionEntity.Create(Guid.NewGuid(), updatedAt, originalAmount, oldType);
@@ -49,9 +52,14 @@ public class TransactionUpdatedConsumerTests : BaseTests
         Assert.That(updatedSummary, Is.Not.Null);
         Assert.Multiple(() =>
         {
-            Assert.That(updatedSummary!.TotalCredits, Is.EqualTo(0));
-            Assert.That(updatedSummary.TotalDebits, Is.EqualTo(200.00m));
+            Assert.That(updatedSummary!.TotalCredits, Is.EqualTo(500.00m - originalAmount));
+            Assert.That(updatedSummary.TotalDebits, Is.EqualTo(300.00m + newAmount));
         });
+
+        _cacheMock.Verify(c => c.RemoveAsync(
+            It.Is<string>(key => key == $"daily-summary:{updatedAt:yyyy-MM-dd}"),
+            It.IsAny<CancellationToken>()),
+            Times.AtLeastOnce);
     }
 
     [Test]
@@ -82,5 +90,10 @@ public class TransactionUpdatedConsumerTests : BaseTests
             Assert.That(summary!.TotalCredits, Is.EqualTo(amount));
             Assert.That(summary.TotalDebits, Is.EqualTo(0));
         });
+
+        _cacheMock.Verify(c => c.RemoveAsync(
+            It.Is<string>(key => key == $"daily-summary:{updatedAt:yyyy-MM-dd}"),
+            It.IsAny<CancellationToken>()),
+            Times.AtLeastOnce);
     }
 }

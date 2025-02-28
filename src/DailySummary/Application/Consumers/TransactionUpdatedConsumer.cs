@@ -1,12 +1,13 @@
 ﻿using Domain.Entities;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Shared.Enums;
 using Shared.Messages;
 
 namespace Application.Consumers;
 
-public class TransactionUpdatedConsumer(IApplicationDbContext _context) : IConsumer<TransactionUpdated>
+public class TransactionUpdatedConsumer(IApplicationDbContext _context, IDistributedCache _cache) : IConsumer<TransactionUpdated>
 {
     public async Task Consume(ConsumeContext<TransactionUpdated> context)
     {
@@ -58,11 +59,17 @@ public class TransactionUpdatedConsumer(IApplicationDbContext _context) : IConsu
         else
         {
             newSummary.Update(
-                newType == TransactionType.Credit ? newAmount : 0,
-                newType == TransactionType.Debit ? newAmount : 0
+                newSummary.TotalCredits + (newType == TransactionType.Credit ? newAmount : 0),
+                newSummary.TotalDebits + (newType == TransactionType.Debit ? newAmount : 0)
             );
         }
 
         await _context.SaveChangesAsync();
+
+        var oldCacheKey = $"daily-summary:{oldDate:yyyy-MM-dd}";
+        var newCacheKey = $"daily-summary:{newDate:yyyy-MM-dd}";
+
+        await _cache.RemoveAsync(oldCacheKey);
+        await _cache.RemoveAsync(newCacheKey);
     }
 }
