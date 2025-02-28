@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Application.Transaction.Handlers.CreateTransaction;
 using static Application.Transaction.Handlers.DeleteTransaction;
@@ -13,6 +14,7 @@ namespace Web.Api.Controllers;
 /// Controlador para gerenciar transações.
 /// </summary>
 [Route("api/transactions")]
+[Authorize]
 [ApiController]
 public class TransactionsController(IMediator _mediatr) : ControllerBase
 {

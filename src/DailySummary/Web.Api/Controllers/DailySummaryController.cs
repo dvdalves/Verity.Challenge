@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Application.DailySummary.Handlers.GetDailySummary;
 
@@ -9,6 +10,7 @@ namespace Web.Api.Controllers;
 /// Controlador para obter resumos diários de transações.
 /// </summary>
 [Route("api/daily-summary")]
+[Authorize]
 [ApiController]
 public class DailySummaryController(IMediator mediator) : ControllerBase
 {
