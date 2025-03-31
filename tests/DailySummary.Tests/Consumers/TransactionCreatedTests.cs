@@ -35,6 +35,8 @@ public class TransactionCreatedConsumerTests : BaseTests
         var contextMock = new Mock<ConsumeContext<TransactionCreated>>();
         contextMock.Setup(c => c.Message).Returns(message);
 
+        var expectedCacheKey = $"daily-summary:{createdAt:yyyy-MM-dd}";
+
         // Act
         await _consumer.Consume(contextMock.Object);
 
@@ -50,7 +52,7 @@ public class TransactionCreatedConsumerTests : BaseTests
         var createdSummary = await DbContext.DailySummaries.FirstOrDefaultAsync();
         Assert.That(createdSummary, Is.Not.Null);
 
-        _cacheMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+        _cacheMock.Verify(c => c.RemoveAsync(It.Is<string>(key => key == expectedCacheKey), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Test]
